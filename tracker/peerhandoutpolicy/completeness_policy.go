@@ -25,6 +25,7 @@ func newCompletenessAssignmentPolicy() assignmentPolicy {
 	return &completenessAssignmentPolicy{}
 }
 
+// 优先级 peer Complete > Origin > peer Incomplete
 func (p *completenessAssignmentPolicy) assignPriority(peer *core.PeerInfo) (int, string) {
 	if peer.Origin {
 		return 1, "origin"

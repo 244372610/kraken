@@ -20,6 +20,7 @@ type Config struct {
 	// MaxReplica is the max number of hosts each blob will be replicated across.
 	// If MaxReplica is >= the number of hosts in the ring, every host will own
 	// every blob.
+	// 每个 blob 最多在 maxReplica 数量的 host上存放
 	MaxReplica int `yaml:"max_replica"`
 
 	// RefreshInterval is the interval at which membership / health information

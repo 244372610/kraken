@@ -23,6 +23,7 @@ import (
 )
 
 // Config defines the configuration for piece dispatch.
+// Config 定义分片分派的配置。
 type Config struct {
 
 	// PieceRequestMinTimeout is the minimum timeout for all piece requests, regardless of
@@ -39,6 +40,7 @@ type Config struct {
 
 	// PipelineLimit limits the total number of requests can be sent to a peer
 	// at the same time.
+	// PipelineLimit 限制了同一时间可以被发送到一个 Peer 的总数量
 	PipelineLimit int `yaml:"pipeline_limit"`
 
 	// EndgameThreshold is the number pieces required to complete the torrent
@@ -49,6 +51,7 @@ type Config struct {
 	DisableEndgame bool `yaml:"disable_endgame"`
 }
 
+// 默认设置
 func (c Config) applyDefaults() Config {
 	if c.PieceRequestPolicy == "" {
 		c.PieceRequestPolicy = piecerequest.DefaultPolicy

@@ -35,7 +35,7 @@ type PieceReader interface {
 	Length() int
 }
 
-// Torrent represents a read/write interface for a torrent
+// Torrent （种子） represents a read/write interface for a torrent
 type Torrent interface {
 	Digest() core.Digest
 	Stat() *TorrentInfo
@@ -57,6 +57,7 @@ type Torrent interface {
 }
 
 // TorrentArchive creates and open torrent file
+// 创建并打开种子文件
 type TorrentArchive interface {
 	Stat(namespace string, d core.Digest) (*TorrentInfo, error)
 	CreateTorrent(namespace string, d core.Digest) (Torrent, error)

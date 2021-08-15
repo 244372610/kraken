@@ -56,9 +56,9 @@ type ring struct {
 	filter  healthcheck.Filter
 
 	mu      sync.RWMutex // Protects the following fields:
-	addrs   stringset.Set
+	addrs   stringset.Set  // 服务节点列表
 	hash    *hrw.RendezvousHash
-	healthy stringset.Set
+	healthy stringset.Set  // 健康的服务节点列表
 
 	watchers []Watcher
 }
@@ -102,11 +102,12 @@ func (r *ring) Locations(d core.Digest) []string {
 		// This should never happen.
 		log.Fatal("invariant violation: ordered hash nodes not equal to cluster size")
 	}
-
+	// 如果所有的节点都是不健康的状态，则返回第一个拥有 digest的节点（不管当前节点是否正常）
 	if len(r.healthy) == 0 {
 		return []string{nodes[0].Label}
 	}
 
+	// 返回拥有digest的健康节点，如果所有拥有digest的节点都不健康，则返回next healthy address
 	var locs []string
 	for i := 0; i < len(nodes) && (len(locs) == 0 || i < r.config.MaxReplica); i++ {
 		addr := nodes[i].Label
@@ -118,6 +119,7 @@ func (r *ring) Locations(d core.Digest) []string {
 }
 
 // Contains returns whether the ring contains addr.
+// 判断 hashing环是否有对应addr
 func (r *ring) Contains(addr string) bool {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -145,7 +147,7 @@ func (r *ring) Refresh() {
 	healthy := r.filter.Run(latest)
 
 	hash := r.hash
-	if !stringset.Equal(r.addrs, latest) {
+	if !stringset.Equal(r.addrs, latest) { // 如果当前地址列表和最新的结果是否一致
 		// Membership has changed -- update hash nodes.
 		hash = hrw.NewRendezvousHash(hrw.Murmur3Hash, hrw.UInt64ToFloat64)
 		for addr := range latest {

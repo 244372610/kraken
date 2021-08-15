@@ -10,6 +10,7 @@ package p2p;
 // handshaking message, which each peer sends once at the beginning of the
 // connection to declare what their peer id is and what info hash they want to
 // transmit.
+// Peer 已下载到目前为止的所有片段的二进制集。也可以作为握手消息，每个对等体在连接开始时发送一次，以声明他们的对等体id是什么，以及他们想要传输什么信息哈希
 message BitfieldMessage {
     string infoHash = 2;
     // TODO: Torrent name is the content hash. Current torrent storage is 
@@ -26,6 +27,7 @@ message BitfieldMessage {
 
     // remoteBitfieldBytes contains the binary sets of pieces downloaded of
     // all peers that the sender is currently connected to.
+    // remoteBitfieldBytes 包含发送方当前连接的所有对等点下载的二进制集。
     map<string, bytes> remoteBitfieldBytes = 7;
 }
 

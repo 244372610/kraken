@@ -72,6 +72,7 @@ type handshake struct {
 	namespace       string
 }
 
+// 转换成 bitfield message
 func (h *handshake) toP2PMessage() (*p2p.Message, error) {
 	b, err := h.bitfield.MarshalBinary()
 	if err != nil {
@@ -94,6 +95,7 @@ func (h *handshake) toP2PMessage() (*p2p.Message, error) {
 	}, nil
 }
 
+// 从 p2p message 转换成 shake
 func handshakeFromP2PMessage(m *p2p.Message) (*handshake, error) {
 	if m.Type != p2p.Message_BITFIELD {
 		return nil, fmt.Errorf("expected bitfield message, got %s", m.Type)
@@ -258,6 +260,7 @@ func (h *Handshaker) Establish(
 // Initialize returns a fully established Conn for the given torrent to the
 // given peer / address. Also returns the bitfield of the remote peer and
 // its connections for the torrent.
+// 返回对端Peer已经完成了哪些分片
 func (h *Handshaker) Initialize(
 	peerID core.PeerID,
 	addr string,
@@ -269,6 +272,7 @@ func (h *Handshaker) Initialize(
 	if err != nil {
 		return nil, fmt.Errorf("dial: %s", err)
 	}
+	// 建立双向链接
 	r, err := h.fullHandshake(nc, peerID, info, remoteBitfields, namespace)
 	if err != nil {
 		nc.Close()
@@ -277,6 +281,7 @@ func (h *Handshaker) Initialize(
 	return r, nil
 }
 
+// 发送握手消息
 func (h *Handshaker) sendHandshake(
 	nc net.Conn,
 	info *storage.TorrentInfo,
@@ -317,9 +322,11 @@ func (h *Handshaker) fullHandshake(
 	remoteBitfields RemoteBitfields,
 	namespace string) (*HandshakeResult, error) {
 
+	// 发送握手消息
 	if err := h.sendHandshake(nc, info, remoteBitfields, namespace); err != nil {
 		return nil, fmt.Errorf("send handshake: %s", err)
 	}
+	// 读取返回
 	hs, err := h.readHandshake(nc)
 	if err != nil {
 		return nil, fmt.Errorf("read handshake: %s", err)

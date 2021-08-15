@@ -37,9 +37,11 @@ const (
 	StatusExpired
 
 	// StatusUnsent denotes an unsent request that is safe to retry to the same peer.
+	// StatusUnsent 表示一个未发送的请求，可以安全地重试到相同的 peer
 	StatusUnsent
 
 	// StatusInvalid denotes a completed request that resulted in an invalid payload.
+	// StatusInvalid 表示导致无效负载的已完成请求。
 	StatusInvalid
 )
 

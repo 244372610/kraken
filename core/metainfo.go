@@ -28,7 +28,9 @@ import (
 // those pieces (i.e. the piece sums).
 type info struct {
 	// Exported for bencoding.
+	// 分片长度
 	PieceLength int64
+	// 分片md5
 	PieceSums   []uint32
 	Name        string
 	Length      int64
@@ -53,6 +55,7 @@ type MetaInfo struct {
 // NewMetaInfo creates a new MetaInfo. Assumes that d is the valid digest for
 // blob (re-computing it is expensive).
 func NewMetaInfo(d Digest, blob io.Reader, pieceLength int64) (*MetaInfo, error) {
+	// 计算分片sum
 	length, pieceSums, err := calcPieceSums(blob, pieceLength)
 	if err != nil {
 		return nil, err
@@ -151,6 +154,7 @@ func DeserializeMetaInfo(data []byte) (*MetaInfo, error) {
 }
 
 // calcPieceSums hashes blob content in pieceLength chunks.
+// 读取 blob数据，并且计算对应的文件长度和分片md5值
 func calcPieceSums(blob io.Reader, pieceLength int64) (length int64, pieceSums []uint32, err error) {
 	if pieceLength <= 0 {
 		return 0, nil, errors.New("piece length must be positive")

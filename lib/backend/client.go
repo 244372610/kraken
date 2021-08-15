@@ -45,6 +45,7 @@ func getFactory(name string) (ClientFactory, error) {
 //
 // Implementations of Client must be thread-safe, since they are cached and
 // used concurrently by Manager.
+// 和远端存储进行通信
 type Client interface {
 	// Stat returns blob info for name. All implementations should return
 	// backenderrors.ErrBlobNotFound when the blob was not found.

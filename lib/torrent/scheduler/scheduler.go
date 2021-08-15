@@ -57,8 +57,8 @@ type Scheduler interface {
 // scheduler manages global state for the peer. This includes:
 // - Opening torrents.
 // - Announcing to the tracker.
-// - Handshaking incoming connections.
-// - Initializing outgoing connections.
+// - Handshaking incoming connections.  // 和 incoming conn 握手
+// - Initializing outgoing connections.  // 初始化 outgoing conn
 // - Dispatching connections to torrents.
 // - Pre-empting existing connections when better options are available (TODO).
 type scheduler struct {
@@ -144,12 +144,13 @@ func newScheduler(
 	}
 
 	eventLoop := liftEventLoop(overrides.eventLoop)
-
+	// 抢占
 	var preemptionTick <-chan time.Time
 	if !config.DisablePreemption {
 		preemptionTick = overrides.clock.Tick(config.PreemptionInterval)
 	}
 
+	// 和其他的peers握手
 	handshaker, err := conn.NewHandshaker(
 		config.Conn, stats, overrides.clock, netevents, pctx.PeerID, eventLoop, slogger)
 	if err != nil {
@@ -198,6 +199,7 @@ func (s *scheduler) start(aq announcequeue.Queue) error {
 		"Scheduler starting as peer %s on addr %s:%d",
 		s.pctx.PeerID, s.pctx.IP, s.pctx.Port)
 
+	// 监听在 peer-port端口
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", s.pctx.Port))
 	if err != nil {
 		return err
@@ -205,8 +207,9 @@ func (s *scheduler) start(aq announcequeue.Queue) error {
 	s.listener = l
 
 	s.wg.Add(4)
-	go s.runEventLoop(aq) // Careful, this should be the only reference to aq.
-	go s.listenLoop()
+	go s.runEventLoop(aq)
+	// Careful, this should be the only reference to aq.
+	go s.listenLoop() // accepts incoming connections.
 	go s.tickerLoop()
 	go s.announceLoop()
 
@@ -232,6 +235,7 @@ func (s *scheduler) Stop() {
 }
 
 func (s *scheduler) doDownload(namespace string, d core.Digest) (size int64, err error) {
+	// 创建种子，如果本地不存在下载文件元数据，则从tracker获取
 	t, err := s.torrentArchive.CreateTorrent(namespace, d)
 	if err != nil {
 		if err == storage.ErrNotFound {
@@ -242,6 +246,7 @@ func (s *scheduler) doDownload(namespace string, d core.Digest) (size int64, err
 
 	// Buffer size of 1 so sends do not block.
 	errc := make(chan error, 1)
+	// 开始下载
 	if !s.eventLoop.send(newTorrentEvent{namespace, t, errc}) {
 		return 0, ErrSchedulerStopped
 	}
@@ -329,6 +334,7 @@ func (s *scheduler) listenLoop() {
 				nc.Close()
 				return
 			}
+			// 接受请求
 			s.eventLoop.send(incomingHandshakeEvent{pc})
 		}()
 	}
@@ -357,6 +363,7 @@ func (s *scheduler) announceLoop() {
 	s.announcer.Ticker(s.done)
 }
 
+// 告诉 traker 下载结果
 func (s *scheduler) announce(d core.Digest, h core.InfoHash, complete bool) {
 	peers, err := s.announcer.Announce(d, h, complete)
 	if err != nil {
@@ -395,6 +402,7 @@ func (s *scheduler) establishIncomingHandshake(pc *conn.PendingConn, rb conn.Rem
 
 // initializeOutgoingHandshake attempts to initialize a conn to a remote peer.
 // Success / failure is communicated via events.
+// 尝试初始化一个和对端 peer 的连接
 func (s *scheduler) initializeOutgoingHandshake(
 	p *core.PeerInfo, info *storage.TorrentInfo, rb conn.RemoteBitfields, namespace string) {
 

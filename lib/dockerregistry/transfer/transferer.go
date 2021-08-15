@@ -19,6 +19,8 @@ import (
 )
 
 // ImageTransferer defines an interface that transfers images
+// todo 这个接口很关键，他把对官方register的访问替换成了对Kraken的访问
+// 比如将 GET /v2/<name>/blobs/<digest> 替换成 GET /namespace/<name>/blobs/<digest>
 type ImageTransferer interface {
 	Stat(namespace string, d core.Digest) (*core.BlobInfo, error)
 	Download(namespace string, d core.Digest) (store.FileReader, error)

@@ -27,6 +27,7 @@ import (
 
 // Message joins a protobuf message with an optional payload. The only p2p.Message
 // type which should include a payload is PiecePayloadMessage.
+// Message 将 protobuf 消息与可选的有效负载连接起来。唯一应该包含有效负载的 p2p.Message 类型是 PiecePayloadMessage。
 type Message struct {
 	Message *p2p.Message
 	Payload storage.PieceReader
@@ -96,15 +97,18 @@ func NewCompleteMessage() *Message {
 	}
 }
 
+// 写数据
 func sendMessage(nc net.Conn, msg *p2p.Message) error {
 	data, err := proto.Marshal(msg)
 	if err != nil {
 		return fmt.Errorf("proto marshal: %s", err)
 	}
+	// 写数据长度
 	if err := binary.Write(nc, binary.BigEndian, uint32(len(data))); err != nil {
 		return fmt.Errorf("write data length: %s", err)
 	}
 	for len(data) > 0 {
+		// 写数据
 		n, err := nc.Write(data)
 		if err != nil {
 			return fmt.Errorf("write data: %s", err)
@@ -123,8 +127,10 @@ func sendMessageWithTimeout(nc net.Conn, msg *p2p.Message, timeout time.Duration
 	return sendMessage(nc, msg)
 }
 
+// 接受数据
 func readMessage(nc net.Conn) (*p2p.Message, error) {
 	var msglen [4]byte
+	// 获取数据长度
 	if _, err := io.ReadFull(nc, msglen[:]); err != nil {
 		return nil, fmt.Errorf("read message length: %s", err)
 	}
@@ -133,6 +139,7 @@ func readMessage(nc net.Conn) (*p2p.Message, error) {
 		return nil, fmt.Errorf("message exceeds max size: %d > %d", dataLen, maxMessageSize)
 	}
 	data := make([]byte, dataLen)
+	// 读取数据内容
 	if _, err := io.ReadFull(nc, data); err != nil {
 		return nil, fmt.Errorf("read data: %s", err)
 	}

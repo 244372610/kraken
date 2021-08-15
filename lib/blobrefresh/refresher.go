@@ -113,6 +113,7 @@ func (r *Refresher) Refresh(namespace string, d core.Digest, hooks ...PostHook) 
 			"name", d.Hex(),
 			"download_time", t).Info("Downloaded remote blob")
 
+		// 生成任务元信息（下载完成后才会计算）
 		if err := r.metaInfoGenerator.Generate(d); err != nil {
 			return fmt.Errorf("generate metainfo: %s", err)
 		}

@@ -16,10 +16,12 @@ zap:
     callerEncoder: short
   outputPaths:
     - stdout
-    - /var/log/kraken/kraken-agent/stdout.log
+    - /tmp/stdout.log
+#    - /var/log/stdout.log
   errorOutputPaths:
     - stdout
-    - /var/log/kraken/kraken-agent/stdout.log
+    - /tmp/stdout.log
+#    - /var/log/stdout.log
 
 metrics:
   m3:
@@ -40,8 +42,8 @@ scheduler:
       enable: true
 
 store:
-  download_dir: /var/cache/kraken/kraken-agent/download/
-  cache_dir:  /var/cache/kraken/kraken-agent/cache/
+  download_dir: /tmp/kraken-agent/download/
+  cache_dir:  /tmp/kraken-agent/cache/
   download_cleanup:
     ttl: 24h
   cache_cleanup:

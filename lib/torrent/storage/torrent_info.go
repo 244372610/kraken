@@ -23,6 +23,7 @@ import (
 type TorrentInfo struct {
 	metainfo          *core.MetaInfo
 	bitfield          *bitset.BitSet
+	// 已完成百分比
 	percentDownloaded int
 }
 

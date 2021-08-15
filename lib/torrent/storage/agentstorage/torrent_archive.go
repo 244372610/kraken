@@ -29,6 +29,7 @@ import (
 
 // TorrentArchive is capable of initializing torrents in the download directory
 // and serving torrents from either the download or cache directory.
+// TorrentArchive 能够初始化下载目录中的种子，并从下载或缓存目录中提供种子。
 type TorrentArchive struct {
 	stats          tally.Scope
 	cads           *store.CADownloadStore
@@ -52,9 +53,11 @@ func NewTorrentArchive(
 // file does not exist. Ignores namespace.
 func (a *TorrentArchive) Stat(namespace string, d core.Digest) (*storage.TorrentInfo, error) {
 	var tm metadata.TorrentMeta
+	// 种子元信息
 	if err := a.cads.Any().GetMetadata(d.Hex(), &tm); err != nil {
 		return nil, err
 	}
+	// 分片元信息
 	var psm pieceStatusMetadata
 	if err := a.cads.Any().GetMetadata(d.Hex(), &psm); err != nil {
 		return nil, err
@@ -65,6 +68,7 @@ func (a *TorrentArchive) Stat(namespace string, d core.Digest) (*storage.Torrent
 			b.Set(uint(i))
 		}
 	}
+	// 返回torrent元数据
 	return storage.NewTorrentInfo(tm.MetaInfo, b), nil
 }
 
@@ -73,8 +77,10 @@ func (a *TorrentArchive) Stat(namespace string, d core.Digest) (*storage.Torrent
 // if no metainfo was found.
 func (a *TorrentArchive) CreateTorrent(namespace string, d core.Digest) (storage.Torrent, error) {
 	var tm metadata.TorrentMeta
+	// 查看本地是否有元数据信息，如果没有则从 tracker 获取
 	if err := a.cads.Any().GetMetadata(d.Hex(), &tm); os.IsNotExist(err) {
 		downloadTimer := a.stats.Timer("metainfo_download").Start()
+		// 从 tracker 获取 metaInfo
 		mi, err := a.metaInfoClient.Download(namespace, d)
 		if err != nil {
 			if err == metainfoclient.ErrNotFound {
@@ -101,6 +107,7 @@ func (a *TorrentArchive) CreateTorrent(namespace string, d core.Digest) (storage
 	} else if err != nil {
 		return nil, fmt.Errorf("get metainfo: %s", err)
 	}
+	// 如果存在直接返回
 	t, err := NewTorrent(a.cads, tm.MetaInfo)
 	if err != nil {
 		return nil, fmt.Errorf("initialize torrent: %s", err)

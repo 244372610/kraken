@@ -40,9 +40,9 @@ import (
 // Flags defines agent CLI flags.
 type Flags struct {
 	PeerIP            string
-	PeerPort          int
-	AgentServerPort   int
-	AgentRegistryPort int
+	PeerPort          int  // 处理Peer之间的交互
+	AgentServerPort   int  // 处理http的请求服务
+	AgentRegistryPort int  // 处理镜像下载请求
 	ConfigFile        string
 	Zone              string
 	KrakenCluster     string
@@ -155,6 +155,7 @@ func Run(flags *Flags, opts ...Option) {
 		flags.PeerIP = localIP
 	}
 
+	// pctx 类比 dragonfly2 daemon
 	pctx, err := core.NewPeerContext(
 		config.PeerIDFactory, flags.Zone, flags.KrakenCluster, flags.PeerIP, flags.PeerPort, false)
 	if err != nil {
@@ -182,6 +183,7 @@ func Run(flags *Flags, opts ...Option) {
 		log.Fatalf("Error building client tls config: %s", err)
 	}
 
+	// 创建 agent scheduler
 	sched, err := scheduler.NewAgentScheduler(
 		config.Scheduler, stats, pctx, cads, netevents, trackers, tls)
 	if err != nil {

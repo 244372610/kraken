@@ -21,6 +21,7 @@ import (
 	"github.com/uber/kraken/lib/store/metadata"
 )
 
+// 生成分片元数据信息
 // Generator wraps static piece length configuration in order to determinstically
 // generate metainfo.
 type Generator struct {
@@ -39,6 +40,7 @@ func New(config Config, cas *store.CAStore) (*Generator, error) {
 
 // Generate generates metainfo for the blob of d and writes it to disk.
 func (g *Generator) Generate(d core.Digest) error {
+	// 根据 digest 获取文件
 	info, err := g.cas.GetCacheFileStat(d.Hex())
 	if err != nil {
 		return fmt.Errorf("cache stat: %s", err)
@@ -47,6 +49,7 @@ func (g *Generator) Generate(d core.Digest) error {
 	if err != nil {
 		return fmt.Errorf("get cache file: %s", err)
 	}
+	// 根据文件大小计算分片信息
 	pieceLength := g.pieceLengthConfig.get(info.Size())
 	mi, err := core.NewMetaInfo(d, f, pieceLength)
 	if err != nil {

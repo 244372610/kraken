@@ -92,6 +92,7 @@ func (r *staticResolver) String() string {
 	return strings.Join(r.set.ToSlice(), ",")
 }
 
+// dns 地址解析
 type dnsResolver struct {
 	dns  string
 	port int

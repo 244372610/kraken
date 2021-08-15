@@ -38,7 +38,7 @@ type list struct {
 	snapshotTrap *dedup.IntervalTrap
 
 	mu       sync.RWMutex
-	snapshot stringset.Set
+	snapshot stringset.Set  // 服务节点列表快照
 }
 
 // New creates a new List.

@@ -108,6 +108,7 @@ func (c *client) Announce(
 		return nil, 0, fmt.Errorf("marshal request: %s", err)
 	}
 	var httpResp *http.Response
+	// 获取可用 tracker
 	for _, addr := range c.ring.Locations(d) {
 		method, url := getEndpoint(version, addr, h)
 		httpResp, err = httputil.Send(

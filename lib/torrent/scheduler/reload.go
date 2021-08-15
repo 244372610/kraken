@@ -22,6 +22,7 @@ import (
 )
 
 // ReloadableScheduler is a Scheduler which supports reloadable configuration.
+// 支持动态加载配置的scheduler。对 Scheduler 进行了一层包装
 type ReloadableScheduler interface {
 	Scheduler
 	Reload(config Config)
@@ -47,6 +48,7 @@ func (rs *reloadableScheduler) Reload(config Config) {
 	}
 }
 
+// 重新加载配置
 func (rs *reloadableScheduler) reload(config Config) error {
 	rs.mu.Lock()
 	defer rs.mu.Unlock()
@@ -60,7 +62,7 @@ func (rs *reloadableScheduler) reload(config Config) error {
 		return fmt.Errorf("create new scheduler: %s", err)
 	}
 	rs.scheduler = n
-
+	// 重新创建一个 announcequeue.Queue 队列
 	if err := rs.scheduler.start(rs.aq()); err != nil {
 		return fmt.Errorf("start new scheduler: %s", err)
 	}

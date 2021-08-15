@@ -69,6 +69,7 @@ func (c *HTTPClient) GetTag(tag string) (core.Digest, error) {
 
 // Download returns the blob of d. Callers should close the returned ReadCloser
 // when done reading the blob.
+// 获取到的是数据流，直接从数据流中读取数据
 func (c *HTTPClient) Download(namespace string, d core.Digest) (io.ReadCloser, error) {
 	resp, err := httputil.Get(
 		fmt.Sprintf(

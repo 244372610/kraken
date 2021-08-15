@@ -28,7 +28,7 @@ const (
 	_lockLevelPeek lockLevel = iota
 	// lockLevelRead indicates lock for read.
 	_lockLevelRead
-	// lockLevelWrite indicates lock for read.
+	// lockLevelWrite indicates lock for write.
 	_lockLevelWrite
 )
 
@@ -37,7 +37,7 @@ const (
 type FileOp interface {
 	AcceptState(state FileState) FileOp
 	GetAcceptableStates() map[FileState]interface{}
-
+	// CreateFile 创建文件
 	CreateFile(name string, createState FileState, len int64) error
 	MoveFileFrom(name string, createState FileState, sourcePath string) error
 	MoveFile(name string, goalState FileState) error

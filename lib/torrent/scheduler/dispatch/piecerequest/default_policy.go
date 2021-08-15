@@ -22,6 +22,7 @@ import (
 )
 
 // DefaultPolicy randomly selects pieces to request.
+// 默认策略是随机选取请求分片
 const DefaultPolicy = "default"
 
 type defaultPolicy struct{}

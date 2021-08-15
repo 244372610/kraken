@@ -78,6 +78,7 @@ func NewLRUFileMap(size int, clk clock.Clock) FileMap {
 
 // NewLATFileMap creates a new file map that tracks last access time, but no
 // auto-eviction.
+// NewLATFileMap 创建一个跟踪上次访问时间的新文件映射，但没有自动回收。
 func NewLATFileMap(clk clock.Clock) FileMap {
 	m := &lruFileMap{
 		size:           0, // Disable eviction.

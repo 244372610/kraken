@@ -21,6 +21,7 @@ import (
 )
 
 // RarestFirstPolicy selects pieces that the fewest of our peers have to request first.
+// 最稀疏优先策略
 const RarestFirstPolicy = "rarest_first"
 
 type rarestFirstPolicy struct{}
@@ -29,6 +30,7 @@ func newRarestFirstPolicy() *rarestFirstPolicy {
 	return &rarestFirstPolicy{}
 }
 
+// 选择分片
 func (p *rarestFirstPolicy) selectPieces(
 	limit int,
 	valid func(int) bool,

@@ -76,6 +76,7 @@ func (s *Server) Handler() http.Handler {
 
 	r.Get("/tags/{tag}", handler.Wrap(s.getTagHandler))
 
+	// GET /v2/<name>/blobs/<digest>
 	r.Get("/namespace/{namespace}/blobs/{digest}", handler.Wrap(s.downloadBlobHandler))
 
 	r.Delete("/blobs/{digest}", handler.Wrap(s.deleteBlobHandler))
@@ -112,6 +113,7 @@ func (s *Server) getTagHandler(w http.ResponseWriter, r *http.Request) error {
 }
 
 // downloadBlobHandler downloads a blob through p2p.
+// 在方法中调用了 metaData 接口
 func (s *Server) downloadBlobHandler(w http.ResponseWriter, r *http.Request) error {
 	namespace, err := httputil.ParseParam(r, "namespace")
 	if err != nil {
@@ -121,15 +123,18 @@ func (s *Server) downloadBlobHandler(w http.ResponseWriter, r *http.Request) err
 	if err != nil {
 		return err
 	}
+	// 查询缓存是否已经存在下载文件
 	f, err := s.cads.Cache().GetFileReader(d.Hex())
 	if err != nil {
 		if os.IsNotExist(err) || s.cads.InDownloadError(err) {
+			// 如果本地没有或者查询失败，则调用了 traker metaData 接口 获取
 			if err := s.sched.Download(namespace, d); err != nil {
 				if err == scheduler.ErrTorrentNotFound {
 					return handler.ErrorStatus(http.StatusNotFound)
 				}
 				return handler.Errorf("download torrent: %s", err)
 			}
+			// 获取下载文件
 			f, err = s.cads.Cache().GetFileReader(d.Hex())
 			if err != nil {
 				return handler.Errorf("store: %s", err)
@@ -138,6 +143,7 @@ func (s *Server) downloadBlobHandler(w http.ResponseWriter, r *http.Request) err
 			return handler.Errorf("store: %s", err)
 		}
 	}
+	// todo 整个文件下载完成后才返回？
 	if _, err := io.Copy(w, f); err != nil {
 		return fmt.Errorf("copy file: %s", err)
 	}
@@ -175,6 +181,7 @@ func (s *Server) preloadTagHandler(w http.ResponseWriter, r *http.Request) error
 }
 
 func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) error {
+	// 验证调度程序事件循环是否正在运行并未阻塞。
 	if err := s.sched.Probe(); err != nil {
 		return handler.Errorf("probe torrent client: %s", err)
 	}
@@ -205,6 +212,7 @@ func (s *Server) getBlacklistHandler(w http.ResponseWriter, r *http.Request) err
 	return nil
 }
 
+// 解析 sha256 签名
 func parseDigest(r *http.Request) (core.Digest, error) {
 	raw, err := httputil.ParseParam(r, "digest")
 	if err != nil {

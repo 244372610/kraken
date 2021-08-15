@@ -17,19 +17,20 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/uber/kraken/lib/store/base"
-	"github.com/uber/kraken/lib/store/metadata"
 	"github.com/andres-erbsen/clock"
 	"github.com/uber-go/tally"
+	"github.com/uber/kraken/lib/store/base"
+	"github.com/uber/kraken/lib/store/metadata"
 )
 
 // CADownloadStore allows simultaneously downloading and uploading
 // content-adddressable files.
+// CADownloadStore 允许同时下载和上传内容可寻址的文件。
 type CADownloadStore struct {
 	backend       base.FileStore
 	downloadState base.FileState
-	cacheState    base.FileState
-	cleanup       *cleanupManager
+	cacheState    base.FileState  // FileState决定文件所在的目录。文件在任何给定时间只能处于一种状态。
+	cleanup       *cleanupManager // 空间清理器
 }
 
 // NewCADownloadStore creates a new CADownloadStore.
@@ -151,6 +152,7 @@ func (s *CADownloadStore) Cache() *CADownloadStoreScope {
 }
 
 // Any scopes the store to files in any state.
+// Any 将存储范围限定为任何状态的文件。
 func (s *CADownloadStore) Any() *CADownloadStoreScope {
 	return s.states().download().cache()
 }

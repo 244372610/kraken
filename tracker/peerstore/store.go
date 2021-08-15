@@ -27,6 +27,7 @@ type Store interface {
 	Close()
 
 	// GetPeers returns at most n random peers announcing for h.
+	// 随机返回最多 n 个 peer
 	GetPeers(h core.InfoHash, n int) ([]*core.PeerInfo, error)
 
 	// UpdatePeer updates peer fields.

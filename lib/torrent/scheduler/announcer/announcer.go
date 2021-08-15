@@ -98,7 +98,7 @@ func (a *Announcer) Announce(
 		interval = a.config.DefaultInterval
 	}
 	if interval > a.config.MaxInterval {
-		// Since the timer is only reset on ticks, a wildly high interval can lock
+		// Since the timer is only reset on ticks, a wildly high interval c an lock
 		// down future updates to interval. The max interval protects against a
 		// mistake in the central authority which will become impossible to correct.
 		interval = a.config.DefaultInterval

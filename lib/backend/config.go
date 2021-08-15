@@ -20,6 +20,7 @@ import (
 
 // Config defines the union of configuration for all backends. Only one is
 // allowed for each config file.
+// Config 对于所有的 backends 定义了一个统一的配置， 对于每一个配置文件只有一个生效
 type Config struct {
 	Namespace string                 `yaml:"namespace"`
 	Backend   map[string]interface{} `yaml:"backend"`

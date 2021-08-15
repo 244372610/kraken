@@ -137,6 +137,12 @@ func (c *clusterClient) GetMetaInfo(namespace string, d core.Digest) (mi *core.M
 		return nil, fmt.Errorf("resolve clients: %s", err)
 	}
 	for _, client := range clients {
+		// todo 这个地方要验证是否是202就返回失败。如果失败如何进行重试
+		// GetMetaInfo returns metainfo for d. If the blob of d is not available yet
+		// (i.e. still downloading), returns a 202 httputil.StatusError, indicating that
+		// the request should be retried later. If no blob exists for d, returns a 404
+		// httputil.StatusError.
+		// 这里没办法做到origin一边回源，一边seeding
 		mi, err = client.GetMetaInfo(namespace, d)
 		// Do not try the next replica on 202 errors.
 		if err != nil && !httputil.IsAccepted(err) {

@@ -45,6 +45,7 @@ type Events interface {
 
 // Conn manages peer communication over a connection for multiple torrents. Inbound
 // messages are multiplexed based on the torrent they pertain to.
+// Conn通过一个连接来管理多个种子的对等通信。入站消息是基于它们所属的torrent进行多路复用的。
 type Conn struct {
 	peerID      core.PeerID
 	infoHash    core.InfoHash
@@ -69,8 +70,8 @@ type Conn struct {
 
 	startOnce sync.Once
 
-	sender   chan *Message
-	receiver chan *Message
+	sender   chan *Message  // 向远端 Peer 发送
+	receiver chan *Message  // 从远端 Peer 接收
 
 	// The following fields orchestrate the closing of the connection:
 	closed *atomic.Bool
@@ -127,6 +128,7 @@ func newConn(
 // close itself if it encounters an error reading/writing to the underlying
 // socket.
 func (c *Conn) Start() {
+	// TODO 可以用到现有项目
 	c.startOnce.Do(func() {
 		c.wg.Add(2)
 		go c.readLoop()
@@ -283,6 +285,7 @@ func (c *Conn) sendMessage(msg *Message) error {
 
 // writeLoop writes messages the underlying connection by pulling messages off of the sender
 // channel.
+// 写goroutine
 func (c *Conn) writeLoop() {
 	defer func() {
 		c.wg.Done()

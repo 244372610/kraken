@@ -366,6 +366,7 @@ func (s *Server) overwriteMetaInfo(d core.Digest, pieceLength int64) error {
 func (s *Server) getMetaInfo(namespace string, d core.Digest) ([]byte, error) {
 	var tm metadata.TorrentMeta
 	if err := s.cas.GetCacheFileMetadata(d.Hex(), &tm); os.IsNotExist(err) {
+		// 开始触发origin下载
 		return nil, s.startRemoteBlobDownload(namespace, d, true)
 	} else if err != nil {
 		return nil, handler.Errorf("get cache metadata: %s", err)
@@ -456,6 +457,7 @@ func (s *Server) applyToReplicas(d core.Digest, f func(i int, c blobclient.Clien
 func (s *Server) downloadBlob(namespace string, d core.Digest, dst io.Writer) error {
 	f, err := s.cas.GetCacheFileReader(d.Hex())
 	if os.IsNotExist(err) {
+		// 如果对应的blob不存在
 		return s.startRemoteBlobDownload(namespace, d, true)
 	} else if err != nil {
 		return handler.Errorf("get cache file: %s", err)

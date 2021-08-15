@@ -21,7 +21,7 @@ import (
 // An Item is something we manage in a priority queue.
 type Item struct {
 	Value    interface{} // The value of the item; arbitrary.
-	Priority int         // The priority of the item in the queue (low value == high priority).
+	Priority int         // The priority of the item in the queue (low value == high priority). 值越小越优先
 }
 
 // PriorityQueue implements a heap returns Items with lowest priority first.
@@ -66,11 +66,13 @@ func (q internalQueue) Swap(i, j int) {
 	q[i], q[j] = q[j], q[i]
 }
 
+// Push 添加到切片尾部
 func (q *internalQueue) Push(x interface{}) {
 	item := x.(*Item)
 	*q = append(*q, item)
 }
 
+// Pop 返回切片的最后一个元素
 func (q *internalQueue) Pop() interface{} {
 	old := *q
 	n := len(old)

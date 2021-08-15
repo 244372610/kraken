@@ -75,6 +75,7 @@ func (s *Server) announceHandlerV2(w http.ResponseWriter, r *http.Request) error
 func (s *Server) announce(
 	d core.Digest, h core.InfoHash, peer *core.PeerInfo) (*announceclient.Response, error) {
 
+	// 更新 peer 信息
 	if err := s.peerStore.UpdatePeer(h, peer); err != nil {
 		log.With(
 			"hash", h,
@@ -84,6 +85,7 @@ func (s *Server) announce(
 	if err != nil {
 		return nil, err
 	}
+	// 下次发起announce的间隔默认3秒钟
 	return &announceclient.Response{
 		Peers:    peers,
 		Interval: s.config.AnnounceInterval,
@@ -107,9 +109,11 @@ func (s *Server) getPeerHandout(
 	if err != nil {
 		errs = append(errs, fmt.Errorf("origin store: %s", err))
 	}
+	// 将随机获取到的peer和origin
 	peers = append(peers, origins...)
 	if len(peers) == 0 {
 		return nil, handler.Errorf("no peers available: %s", errutil.Join(errs))
 	}
+	// 对返回结果进行排序
 	return s.policy.SortPeers(peer, peers), nil
 }

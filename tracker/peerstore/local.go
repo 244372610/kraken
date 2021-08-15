@@ -116,6 +116,7 @@ func (s *LocalStore) GetPeers(h core.InfoHash, n int) ([]*core.PeerInfo, error) 
 }
 
 // UpdatePeer implements Store.
+// 新的peer加入到
 func (s *LocalStore) UpdatePeer(h core.InfoHash, p *core.PeerInfo) error {
 	g := s.getOrInitLockedPeerGroup(h)
 	defer g.mu.Unlock()

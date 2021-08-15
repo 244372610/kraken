@@ -45,6 +45,7 @@ type torrentControl struct {
 // level. These operations should be defined as scheduler methods, and executed
 // from a separate goroutine when calling from the event loop. Results from I/O
 // may transform state by sending events into the event loop.
+// state 可以访问 scheduler，但是 scheduler 无法访问state
 type state struct {
 	sched *scheduler
 

@@ -27,7 +27,9 @@ import (
 
 // Config defines Limiter configuration.
 type Config struct {
+	// 出口
 	EgressBitsPerSec  uint64 `yaml:"egress_bits_per_sec"`
+	// 进口
 	IngressBitsPerSec uint64 `yaml:"ingress_bits_per_sec"`
 
 	// TokenSize defines the granularity of a token in the bucket. It is used to

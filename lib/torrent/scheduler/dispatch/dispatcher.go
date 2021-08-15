@@ -50,6 +50,7 @@ type Events interface {
 
 // Messages defines a subset of conn.Conn methods which Dispatcher requires to
 // communicate with remote peers.
+// Messages 定义了 conn.Conn 方法的子集，Dispatcher 需要这些方法与远程 peers 通信
 type Messages interface {
 	Send(msg *conn.Message) error
 	Receiver() <-chan *conn.Message
@@ -59,6 +60,7 @@ type Messages interface {
 // Dispatcher coordinates torrent state with sending / receiving messages between multiple
 // peers. As such, Dispatcher and Torrent have a one-to-one relationship, while Dispatcher
 // and Conn have a one-to-many relationship.
+// Dispatcher 和 Torrent 之间是一对一关系， Dispatcher 和 Conn 之间是一对多关系
 type Dispatcher struct {
 	config                Config
 	stats                 tally.Scope
@@ -477,6 +479,7 @@ func (d *Dispatcher) handleError(p *peer, msg *p2p.ErrorMessage) {
 	}
 }
 
+// 处理 peer 已经拥有 piece 的请求
 func (d *Dispatcher) handleAnnouncePiece(p *peer, msg *p2p.AnnouncePieceMessage) {
 	if int(msg.Index) >= d.torrent.NumPieces() {
 		d.log().Errorf("Announce piece out of bounds: %d >= %d", msg.Index, d.torrent.NumPieces())
@@ -493,6 +496,7 @@ func (d *Dispatcher) isFullPiece(i, offset, length int) bool {
 	return offset == 0 && length == int(d.torrent.PieceLength(i))
 }
 
+// 处理 peer 的分片请求
 func (d *Dispatcher) handlePieceRequest(p *peer, msg *p2p.PieceRequestMessage) {
 	p.pstats.incrementPieceRequestsReceived()
 

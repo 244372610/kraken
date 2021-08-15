@@ -334,9 +334,11 @@ func (e newTorrentEvent) apply(s *state) {
 		e.errc <- nil
 		return
 	}
+	// 任务下载完成/关闭/remove的时候会往 ctrl.errors中发送nil，这样外面的下载任务方法才会返回
 	ctrl.errors = append(ctrl.errors, e.errc)
 
 	// Immediately announce new torrents.
+	// 开始真正下载数据
 	go s.sched.announce(ctrl.dispatcher.Digest(), ctrl.dispatcher.InfoHash(), ctrl.dispatcher.Complete())
 }
 
@@ -388,6 +390,7 @@ func (e peerRemovedEvent) apply(s *state) {}
 
 // preemptionTickEvent occurs periodically to preempt unneeded conns and remove
 // idle torrentControls.
+// preemptionTickEvent 周期性发生，抢占不需要的conns并删除空闲的torrentControls。
 type preemptionTickEvent struct{}
 
 func (e preemptionTickEvent) apply(s *state) {

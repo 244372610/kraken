@@ -211,6 +211,7 @@ func Run(config Config, params map[string]interface{}, opts ...Option) error {
 	}
 
 	conf := filepath.Join(_genDir, config.Name)
+	// 写入文件
 	if err := ioutil.WriteFile(conf, src, 0755); err != nil {
 		return fmt.Errorf("write src: %s", err)
 	}

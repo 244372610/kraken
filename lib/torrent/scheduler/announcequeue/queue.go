@@ -40,6 +40,7 @@ type QueueImpl struct {
 // New returns a new QueueImpl.
 func New() *QueueImpl {
 	return &QueueImpl{
+		// 链表
 		readyQueue: list.New(),
 		pending:    make(map[core.InfoHash]bool),
 	}
