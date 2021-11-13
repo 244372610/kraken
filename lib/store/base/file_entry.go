@@ -51,14 +51,17 @@ func (s FileState) GetDirectory() string {
 }
 
 // FileEntryFactory initializes FileEntry obj.
+// 有 casFileEntryFactory 和 localFileEntryFactory 两种实现
 type FileEntryFactory interface {
 	// Create creates a file entry given a state directory and a name.
 	// It calls GetRelativePath to generate the actual file path under given directory,
+	// 创建一个文件
 	Create(name string, state FileState) (FileEntry, error)
 
 	// GetRelativePath returns the relative path for a file entry.
 	// The path is relative to the state directory that file entry belongs to.
 	// i.e. a file entry can have a relative path of 00/0e/filename under directory /var/cache/
+	// 获取相对路径
 	GetRelativePath(name string) string
 
 	// ListNames lists all file entry names in state.
@@ -67,6 +70,7 @@ type FileEntryFactory interface {
 
 // FileEntry manages one file and its metadata.
 // It doesn't guarantee thread-safety; That should be handled by FileMap.
+// 管理数据和metadata信息
 type FileEntry interface {
 	GetState() FileState
 	GetName() string
@@ -81,10 +85,13 @@ type FileEntry interface {
 	Delete() error
 
 	GetReader() (FileReader, error)
+
+	// GetReadWriter 获取文件的读写
 	GetReadWriter() (FileReadWriter, error)
 
 	AddMetadata(md metadata.Metadata) error
 
+	// GetMetadata 获取 metadata 信息
 	GetMetadata(md metadata.Metadata) error
 	SetMetadata(md metadata.Metadata) (bool, error)
 	SetMetadataAt(md metadata.Metadata, b []byte, offset int64) (updated bool, err error)
@@ -221,6 +228,7 @@ func (f *casFileEntryFactory) ListNames(state FileState) ([]string, error) {
 }
 
 // localFileEntry implements FileEntry interface, handles IO operations for one file on local disk.
+// 负责磁盘上文件的 IO 读写操作
 type localFileEntry struct {
 	sync.RWMutex
 
@@ -304,6 +312,7 @@ func (entry *localFileEntry) Create(targetState FileState, size int64) error {
 }
 
 // Reload tries to reload a file that doesn't exist in memory from disk.
+// 从磁盘加载 fileEntry 的元数据信息
 func (entry *localFileEntry) Reload() error {
 	// Verify the file is still on disk.
 	if _, err := os.Stat(entry.GetPath()); err != nil {
@@ -410,6 +419,7 @@ func (entry *localFileEntry) Move(targetState FileState) error {
 }
 
 // LinkTo creates a hardlink to an unmanaged path.
+// 创建一个硬链接到 targetPath
 func (entry *localFileEntry) LinkTo(targetPath string) error {
 	// Create dir.
 	if err := os.MkdirAll(filepath.Dir(targetPath), DefaultDirPermission); err != nil {
@@ -420,7 +430,7 @@ func (entry *localFileEntry) LinkTo(targetPath string) error {
 	return os.Link(entry.GetPath(), targetPath)
 }
 
-// Delete removes file and all of its metedata files from disk. If persist
+// Delete removes file and all of its metadata files from disk. If persist
 // metadata is present and true, delete returns ErrFilePersisted.
 func (entry *localFileEntry) Delete() error {
 	var persist metadata.Persist
@@ -577,6 +587,7 @@ func (entry *localFileEntry) RangeMetadata(f func(md metadata.Metadata) error) e
 // compareAndWriteFile updates file with given bytes and returns true only if the file is updated
 // correctly.
 // It returns false if error happened or file already contains desired content.
+// 比较 filepath 的文件内容和 b 是否一致，如果不一致则更新
 func compareAndWriteFile(filePath string, b []byte) (bool, error) {
 	// Check existence.
 	fs, err := os.Stat(filePath)

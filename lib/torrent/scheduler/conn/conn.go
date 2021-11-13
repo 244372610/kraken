@@ -70,8 +70,10 @@ type Conn struct {
 
 	startOnce sync.Once
 
-	sender   chan *Message  // 向远端 Peer 发送
-	receiver chan *Message  // 从远端 Peer 接收
+	// 向远端 Peer 发送
+	sender   chan *Message
+	// 从远端 Peer 接收
+	receiver chan *Message
 
 	// The following fields orchestrate the closing of the connection:
 	closed *atomic.Bool
@@ -285,7 +287,6 @@ func (c *Conn) sendMessage(msg *Message) error {
 
 // writeLoop writes messages the underlying connection by pulling messages off of the sender
 // channel.
-// 写goroutine
 func (c *Conn) writeLoop() {
 	defer func() {
 		c.wg.Done()

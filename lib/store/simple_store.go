@@ -18,10 +18,10 @@ import (
 	"io"
 	"os"
 
-	"github.com/uber/kraken/lib/store/base"
 	"github.com/andres-erbsen/clock"
 	"github.com/docker/distribution/uuid"
 	"github.com/uber-go/tally"
+	"github.com/uber/kraken/lib/store/base"
 )
 
 // SimpleStore allows uploading / caching raw files of any format.
@@ -37,6 +37,7 @@ func NewSimpleStore(config SimpleStoreConfig, stats tally.Scope) (*SimpleStore, 
 		"module": "simplestore",
 	})
 
+	// 创建 upload 存储
 	uploadStore, err := newUploadStore(config.UploadDir)
 	if err != nil {
 		return nil, fmt.Errorf("new upload store: %s", err)
@@ -52,6 +53,8 @@ func NewSimpleStore(config SimpleStoreConfig, stats tally.Scope) (*SimpleStore, 
 	if err != nil {
 		return nil, fmt.Errorf("new cleanup manager: %s", err)
 	}
+
+	// 添加清理任务
 	cleanup.addJob("upload", config.UploadCleanup, uploadStore.newFileOp())
 	cleanup.addJob("cache", config.CacheCleanup, cacheStore.newFileOp())
 

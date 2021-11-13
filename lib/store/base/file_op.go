@@ -203,7 +203,7 @@ func (op *localFileOp) deleteHelper(
 }
 
 // createFileHelper is a helper function that adds a new file to store.
-// it either moves the new file from a unmanaged location, or creates an empty
+// it either moves the new file from an unmanaged location, or creates an empty
 // file with specified size.
 // If file exists and is in an acceptable state, returns os.ErrExist.
 // If file exists but not in an acceptable state, returns FileStateError.

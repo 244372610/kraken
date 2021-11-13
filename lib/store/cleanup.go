@@ -28,6 +28,7 @@ import (
 )
 
 // CleanupConfig defines configuration for periodically cleaning up idle files.
+// 存储清理配置
 type CleanupConfig struct {
 	Disabled bool          `yaml:"disabled"`
 	Interval time.Duration `yaml:"interval"` // How often cleanup runs.

@@ -204,7 +204,7 @@ func (fm *lruFileMap) Contains(name string) bool {
 	return ok
 }
 
-// TryStore tries to stores the given key / value pair into the map.
+// TryStore tries to store the given key / value pair into the map.
 // If object is successfully stored, execute f under the protection of Lock.
 // Returns false if the name is already present.
 func (fm *lruFileMap) TryStore(name string, entry FileEntry, f func(string, FileEntry) bool) bool {
@@ -321,6 +321,7 @@ func (fm *lruFileMap) LoadForRead(name string, f func(string, FileEntry)) bool {
 // of RLock.
 // While f executes, it is guaranteed that k will not be deleted from the map.
 // Returns false if k was not found.
+// 和 上面的 LoadForRead 方法相比，不会更新最近访问时间
 func (fm *lruFileMap) LoadForPeek(name string, f func(string, FileEntry)) bool {
 	e, ok := fm.syncGet(name)
 	if !ok {

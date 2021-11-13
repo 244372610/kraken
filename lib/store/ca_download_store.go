@@ -24,7 +24,7 @@ import (
 )
 
 // CADownloadStore allows simultaneously downloading and uploading
-// content-adddressable files.
+// content-addressable files.
 // CADownloadStore 允许同时下载和上传内容可寻址的文件。
 type CADownloadStore struct {
 	backend       base.FileStore
@@ -76,11 +76,13 @@ func (s *CADownloadStore) Close() {
 }
 
 // CreateDownloadFile creates an empty download file initialized with length.
+// 创建一个文件长度是 length 的空文件
 func (s *CADownloadStore) CreateDownloadFile(name string, length int64) error {
 	return s.backend.NewFileOp().CreateFile(name, s.downloadState, length)
 }
 
 // GetDownloadFileReadWriter returns a FileReadWriter for name.
+//
 func (s *CADownloadStore) GetDownloadFileReadWriter(name string) (FileReadWriter, error) {
 	return s.backend.NewFileOp().AcceptState(s.downloadState).GetFileReadWriter(name)
 }

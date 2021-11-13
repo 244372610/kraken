@@ -155,6 +155,7 @@ func Run(flags *Flags, opts ...Option) {
 		log.Fatalf("Error building build-index host list: %s", err)
 	}
 
+	// build-index client
 	tagClient := tagclient.NewClusterClient(buildIndexes, tls)
 
 	transferer := transfer.NewReadWriteTransferer(stats, tagClient, originCluster, cas)

@@ -155,6 +155,7 @@ func Run(flags *Flags, opts ...Option) {
 
 	go metrics.EmitVersion(stats)
 
+	// 设置 hostname
 	var hostname string
 	if flags.BlobServerHostName == "" {
 		var err error
@@ -167,6 +168,7 @@ func Run(flags *Flags, opts ...Option) {
 	}
 	log.Infof("Configuring origin with hostname '%s'", hostname)
 
+	// 设置 ip
 	if flags.PeerIP == "" {
 		localIP, err := netutil.GetLocalIP()
 		if err != nil {

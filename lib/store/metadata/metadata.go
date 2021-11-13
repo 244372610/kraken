@@ -15,7 +15,7 @@ package metadata
 
 import "regexp"
 
-// Metadata defines types of matadata file.
+// Metadata defines types of metadata file.
 // All implementations of Metadata must register themselves.
 type Metadata interface {
 	GetSuffix() string
