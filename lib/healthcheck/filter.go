@@ -21,6 +21,7 @@ import (
 )
 
 // Filter filters out unhealthy hosts from a host list.
+// 过滤掉不健康的节点
 type Filter interface {
 	Run(addrs stringset.Set) stringset.Set
 }

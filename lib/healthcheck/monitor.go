@@ -23,6 +23,7 @@ import (
 
 // Monitor performs active health checks asynchronously. Can be used in
 // as a hostlist.List.
+// 主动健康检查
 type Monitor struct {
 	config MonitorConfig
 	hosts  hostlist.List
@@ -46,11 +47,13 @@ func NewMonitor(config MonitorConfig, hosts hostlist.List, filter Filter) *Monit
 		healthy: hosts.Resolve(),
 		stop:    make(chan struct{}),
 	}
+	// goroutine
 	go m.loop()
 	return m
 }
 
 // Resolve returns the latest healthy hosts.
+// 返回最新的健康地址集合
 func (m *Monitor) Resolve() stringset.Set {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

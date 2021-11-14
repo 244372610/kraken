@@ -24,6 +24,7 @@ import (
 // and unhealthy.
 //
 // state is thread-safe.
+// 追踪 host 集合的健康状态
 type state struct {
 	sync.Mutex
 	config  FilterConfig
@@ -43,11 +44,13 @@ func newState(config FilterConfig) *state {
 
 // sync sets the current state to addrs. New entries are initialized as healthy,
 // while existing entries not found in addrs are removed from s.
+// 设置 addrs， 对于没有在state中的条目设置成 healthy， 之前存在但是在 addrs 中没有找到的要删除掉
 func (s *state) sync(addrs stringset.Set) {
 	s.Lock()
 	defer s.Unlock()
 
 	for addr := range addrs {
+		// 如果之前不存在，则加入到集合中
 		if !s.all.Has(addr) {
 			s.all.Add(addr)
 			s.healthy.Add(addr)
@@ -55,6 +58,7 @@ func (s *state) sync(addrs stringset.Set) {
 	}
 
 	for addr := range s.healthy {
+		// 在 addrs 中没有找到则从healthy集合中删除
 		if !addrs.Has(addr) {
 			s.healthy.Remove(addr)
 			delete(s.trend, addr)
@@ -68,6 +72,7 @@ func (s *state) failed(addr string) {
 	defer s.Unlock()
 
 	s.trend[addr] = max(min(s.trend[addr]-1, -1), -s.config.Fails)
+	// 如果失败的次数达到配置的失败伐值，则从healthy集合中删除对应节点
 	if s.trend[addr] == -s.config.Fails {
 		s.healthy.Remove(addr)
 	}
@@ -79,6 +84,7 @@ func (s *state) passed(addr string) {
 	defer s.Unlock()
 
 	s.trend[addr] = min(max(s.trend[addr]+1, 1), s.config.Passes)
+	// 如果连续成功的次数达到配置的成功伐值，则加入到healthy集合中
 	if s.trend[addr] == s.config.Passes {
 		s.healthy.Add(addr)
 	}

@@ -19,7 +19,8 @@ import (
 )
 
 // Passive wraps a passive health check and can be used as a hostlist.List. See
-// PassiveFilter for passive health check documenation.
+// PassiveFilter for passive health check documentation.
+// 被动健康检查
 type Passive struct {
 	hosts  hostlist.List
 	filter PassiveFilter
