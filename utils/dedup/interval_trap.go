@@ -26,6 +26,7 @@ type IntervalTask interface {
 }
 
 // IntervalTrap manages trapping into some task which must run at a given interval.
+// 不是每次主动去触发 task 任务的执行， 而是在调用 Trap 方法的时候去判断是否该执行
 type IntervalTrap struct {
 	sync.RWMutex
 	clk      clock.Clock
@@ -52,6 +53,7 @@ func (t *IntervalTrap) ready() bool {
 
 // Trap quickly checks if the interval has passed since the last task run, and if
 // it has, it runs the task.
+// 检查是否到了执行任务时间，如果到了则执行，并更新最新的执行时间
 func (t *IntervalTrap) Trap() {
 	t.RLock()
 	ready := t.ready()

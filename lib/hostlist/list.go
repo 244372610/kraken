@@ -28,6 +28,7 @@ import (
 )
 
 // List defines a list of addresses which is subject to change.
+// 定义了一个可更改的地址列表
 type List interface {
 	Resolve() stringset.Set
 }
@@ -53,6 +54,7 @@ type list struct {
 func New(config Config) (List, error) {
 	config.applyDefaults()
 
+	// 获取对应的resolver
 	resolver, err := config.getResolver()
 	if err != nil {
 		return nil, fmt.Errorf("invalid config: %s", err)
@@ -69,6 +71,7 @@ func New(config Config) (List, error) {
 }
 
 func (l *list) Resolve() stringset.Set {
+	// 去解析获取最新的 snapshot
 	l.snapshotTrap.Trap()
 
 	l.mu.RLock()
@@ -87,6 +90,7 @@ func (t *snapshotTask) Run() {
 	}
 }
 
+// 获取对应的地址列表快照
 func (l *list) takeSnapshot() error {
 	snapshot, err := l.resolver.resolve()
 	if err != nil {
@@ -98,6 +102,7 @@ func (l *list) takeSnapshot() error {
 	return nil
 }
 
+// 从 list 地址列表中去除本地地址
 type nonLocalList struct {
 	list       List
 	localAddrs stringset.Set
@@ -109,6 +114,7 @@ type nonLocalList struct {
 //
 // If the local machine is the only member of list, then Resolve returns an empty
 // set.
+// 去除 list 中的本地地址
 func StripLocal(list List, port int) (List, error) {
 	localNames, err := getLocalNames()
 	if err != nil {
@@ -125,6 +131,7 @@ func (l *nonLocalList) Resolve() stringset.Set {
 	return l.list.Resolve().Sub(l.localAddrs)
 }
 
+// 获取本地地址
 func getLocalNames() (stringset.Set, error) {
 	result := make(stringset.Set)
 

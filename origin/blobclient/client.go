@@ -91,11 +91,13 @@ func New(addr string, opts ...Option) *HTTPClient {
 }
 
 // Addr returns the address of the server the client is provisioned for.
+// 返回为客户端提供的服务器地址。
 func (c *HTTPClient) Addr() string {
 	return c.addr
 }
 
 // Locations returns the origin server addresses which d is sharded on.
+// 返回 d 被分片的源服务器地址列表。
 func (c *HTTPClient) Locations(d core.Digest) ([]string, error) {
 	r, err := httputil.Get(
 		fmt.Sprintf("http://%s/blobs/%s/locations", c.addr, d),

@@ -17,15 +17,17 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/andres-erbsen/clock"
 	"github.com/uber/kraken/lib/store/base"
 	"github.com/uber/kraken/lib/store/metadata"
-	"github.com/andres-erbsen/clock"
 )
 
 // uploadStore provides basic upload file operations. Intended to be embedded
 // in a higher level struct.
 type uploadStore struct {
+	// 主目录
 	state   base.FileState
+	// 底层存储
 	backend base.FileStore
 }
 

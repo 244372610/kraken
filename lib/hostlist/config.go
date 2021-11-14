@@ -28,6 +28,7 @@ import (
 // Config defines a list of hosts using either a DNS record or a static list of
 // addresses. If present, a DNS record always takes precedence over a static
 // list.
+// Config 使用 DNS 记录或静态地址列表定义主机列表。 如果存在，DNS 记录始终优先于静态列表。
 type Config struct {
 	// DNS record from which to resolve host names. Must include port suffix,
 	// which will be attached to each host within the record.
@@ -40,6 +41,7 @@ type Config struct {
 	TTL time.Duration `yaml:"ttl"`
 }
 
+// 设置地址列表的默认缓存时间
 func (c *Config) applyDefaults() {
 	if c.TTL == 0 {
 		c.TTL = 5 * time.Second
@@ -47,6 +49,7 @@ func (c *Config) applyDefaults() {
 }
 
 // getResolver parses the configuration for which resolver to use.
+// 根据配置信息获取对应的resolver（使用staticResolver还是dnsResolver）
 func (c *Config) getResolver() (resolver, error) {
 	if c.DNS == "" && len(c.Static) == 0 {
 		return nil, errors.New("no dns record or static list supplied")
@@ -55,6 +58,7 @@ func (c *Config) getResolver() (resolver, error) {
 		return nil, errors.New("both dns record and static list supplied")
 	}
 
+	// 如果静态列表不为空
 	if len(c.Static) > 0 {
 		for _, addr := range c.Static {
 			if _, _, err := net.SplitHostPort(addr); err != nil {
