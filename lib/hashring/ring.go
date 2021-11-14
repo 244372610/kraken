@@ -44,9 +44,13 @@ type Watcher interface {
 // locations, although in some scenarios the provided locations are not guaranteed
 // to be healthy (see Locations).
 type Ring interface {
+	// Locations 获取拥有给点 digest 的 host 列表
 	Locations(d core.Digest) []string
+	// Contains 对应的 addr 是否在 hash 环中
 	Contains(addr string) bool
+	// Monitor 根据 config 中的配置定时去刷新地址列表
 	Monitor(stop <-chan struct{})
+	// Refresh 获取最新的地址列表和健康的服务节点
 	Refresh()
 }
 
@@ -56,9 +60,11 @@ type ring struct {
 	filter  healthcheck.Filter
 
 	mu      sync.RWMutex // Protects the following fields:
-	addrs   stringset.Set  // 服务节点列表
+	// 服务节点列表
+	addrs   stringset.Set
 	hash    *hrw.RendezvousHash
-	healthy stringset.Set  // 健康的服务节点列表
+	// 健康的服务节点列表
+	healthy stringset.Set
 
 	watchers []Watcher
 }
@@ -93,6 +99,8 @@ func New(
 // healthy address. If all addresses in the ring are unhealthy, then returns
 // the first address which owns d (regardless of health). As such, Locations
 // always returns a non-empty list.
+// 如果所有的节点都是不健康的状态，则返回第一个拥有 digest的节点（不管当前节点是否正常）
+// 返回拥有digest的健康节点，如果所有拥有digest的节点都不健康，则返回next healthy address
 func (r *ring) Locations(d core.Digest) []string {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -119,7 +127,7 @@ func (r *ring) Locations(d core.Digest) []string {
 }
 
 // Contains returns whether the ring contains addr.
-// 判断 hashing环是否有对应addr
+// 判断 hashing 环是否有对应addr
 func (r *ring) Contains(addr string) bool {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -147,13 +155,15 @@ func (r *ring) Refresh() {
 	healthy := r.filter.Run(latest)
 
 	hash := r.hash
-	if !stringset.Equal(r.addrs, latest) { // 如果当前地址列表和最新的结果是否一致
+	if !stringset.Equal(r.addrs, latest) {
+		// 如果当前地址列表和最新的结果是否一致
 		// Membership has changed -- update hash nodes.
 		hash = hrw.NewRendezvousHash(hrw.Murmur3Hash, hrw.UInt64ToFloat64)
 		for addr := range latest {
 			hash.AddNode(addr, _defaultWeight)
 		}
 		// Notify watchers.
+		// 通知 watchers
 		for _, w := range r.watchers {
 			w.Notify(latest.Copy())
 		}
