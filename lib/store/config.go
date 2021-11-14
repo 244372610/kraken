@@ -16,12 +16,14 @@ package store
 // Volume - if provided, volumes are used to store the actual files.
 // Symlinks will be created under state directories.
 // This configuration is needed on hosts with multiple disks.
+// host上有多个磁盘需要这个配置
 type Volume struct {
 	Location string
 	Weight   int
 }
 
 // CAStoreConfig defines CAStore configuration.
+// CAStore 配置
 type CAStoreConfig struct {
 	UploadDir     string        `yaml:"upload_dir"`
 	CacheDir      string        `yaml:"cache_dir"`
@@ -41,6 +43,7 @@ func (c CAStoreConfig) applyDefaults() CAStoreConfig {
 }
 
 // SimpleStoreConfig defines SimpleStore configuration.
+// SimpleStore 配置
 type SimpleStoreConfig struct {
 	UploadDir     string        `yaml:"upload_dir"`
 	CacheDir      string        `yaml:"cache_dir"`
@@ -50,6 +53,7 @@ type SimpleStoreConfig struct {
 
 // CADownloadStoreConfig defines CADownloadStore configuration.
 // TODO(evelynl94): rename
+// CADownloadStore 配置
 type CADownloadStoreConfig struct {
 	DownloadDir     string        `yaml:"download_dir"`
 	CacheDir        string        `yaml:"cache_dir"`

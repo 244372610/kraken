@@ -44,6 +44,8 @@ func NewSimpleStore(config SimpleStoreConfig, stats tally.Scope) (*SimpleStore, 
 	}
 
 	cacheBackend := base.NewLocalFileStore(clock.New())
+
+	// 创建 cache store
 	cacheStore, err := newCacheStore(config.CacheDir, cacheBackend)
 	if err != nil {
 		return nil, fmt.Errorf("new cache store: %s", err)

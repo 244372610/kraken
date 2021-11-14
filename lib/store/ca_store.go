@@ -46,12 +46,15 @@ func NewCAStore(config CAStoreConfig, stats tally.Scope) (*CAStore, error) {
 		"module": "castore",
 	})
 
+	// 创建 upload store
 	uploadStore, err := newUploadStore(config.UploadDir)
 	if err != nil {
 		return nil, fmt.Errorf("new upload store: %s", err)
 	}
 
 	cacheBackend := base.NewCASFileStoreWithLRUMap(config.Capacity, clock.New())
+
+	// 创建 cache store
 	cacheStore, err := newCacheStore(config.CacheDir, cacheBackend)
 	if err != nil {
 		return nil, fmt.Errorf("new cache store: %s", err)

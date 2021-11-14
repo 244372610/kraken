@@ -25,7 +25,7 @@ import (
 
 // CADownloadStore allows simultaneously downloading and uploading
 // content-addressable files.
-// CADownloadStore 允许同时下载和上传内容可寻址的文件。
+// CADownloadStore 允许同时下载和上传内容可寻址的文件。注意和 CAStore 的区别
 type CADownloadStore struct {
 	backend       base.FileStore
 	downloadState base.FileState

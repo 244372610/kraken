@@ -35,7 +35,7 @@ var (
 
 // FileState decides what directory a file is in.
 // A file can only be in one state at any given time.
-// FileState 决定文件所在的目录。文件在任何给定时间只能处于一种状态。
+// FileState 决定文件所在的目录。文件在任何给定时间只能处于一个 state。
 type FileState struct {
 	directory string
 }
