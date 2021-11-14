@@ -67,6 +67,7 @@ func NewDockerClient(config Config, registry string) (DockerClient, error) {
 // parseHost parses host URL and returns a HTTP client.
 // This is needed because url.Parse cannot correctly parse url of format
 // "unix:///...".
+// 因为 url.Parse 无法正确解析 unix:///... 的url，所以需要这个方法
 func parseHost(host string) (*http.Client, string, string, error) {
 	strs := strings.SplitN(host, "://", 2)
 	if len(strs) == 1 {
@@ -102,7 +103,7 @@ func parseHost(host string) (*http.Client, string, string, error) {
 	return client, addr, basePath, nil
 }
 
-// ImagePull calls `docker pull` on an image from known registry.
+// PullImage calls `docker pull` on an image from known registry.
 func (cli *dockerClient) PullImage(ctx context.Context, repo, tag string) error {
 	query := url.Values{}
 	fromImage := fmt.Sprintf("%s/%s", cli.registry, repo)
@@ -111,7 +112,7 @@ func (cli *dockerClient) PullImage(ctx context.Context, repo, tag string) error 
 	headers := map[string][]string{"X-Registry-Auth": {""}}
 	urlPath := "/images/create"
 
-	// Construct request. It veries depending on client version.
+	// Construct request. It varies depending on client version.
 	var apiPath string
 	if cli.version != "" {
 		v := strings.TrimPrefix(cli.version, "v")
