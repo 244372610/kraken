@@ -26,7 +26,9 @@ type Config struct {
 }
 
 type rangeConfig struct {
+	// 文件大小
 	fileSize    int64
+	// 分片大小
 	pieceLength int64
 }
 
@@ -45,6 +47,7 @@ type rangeConfig struct {
 //   N >= 2gb, N < 4gb : 4mb
 //   N >= 4gb          : 8mb
 //
+// 文件大小到分片大小的映射
 type pieceLengthConfig struct {
 	ranges []rangeConfig
 }
@@ -62,12 +65,14 @@ func newPieceLengthConfig(
 			pieceLength: int64(pieceLength),
 		})
 	}
+	// 按照文件大小从小到大排序
 	sort.Slice(ranges, func(i, j int) bool {
 		return ranges[i].fileSize < ranges[j].fileSize
 	})
 	return &pieceLengthConfig{ranges}, nil
 }
 
+// 根据文件大小获取对应的分片长度
 func (c *pieceLengthConfig) get(fileSize int64) int64 {
 	pieceLength := c.ranges[0].pieceLength
 	for _, r := range c.ranges {

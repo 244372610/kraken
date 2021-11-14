@@ -22,7 +22,7 @@ type PeerContext struct {
 	// IP and Port specify the address the peer will announce itself as. Note,
 	// this is distinct from the address a peer's Scheduler will listen on
 	// because the peer may be running within a container and the address it
-	// listens on is mapped to a different ip/port outside of the container.
+	// listens on is mapped to a different ip/port outside the container.
 	IP   string `json:"ip"`
 	Port int    `json:"port"`
 

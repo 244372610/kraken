@@ -50,4 +50,5 @@ type Auth map[string]AuthConfig
 
 // AuthConfig defines the union of authentication credentials for all type of
 // remote backends.
+// 为所有类型的远程后端定义身份验证凭证的联合
 type AuthConfig map[string]interface{}

@@ -128,7 +128,7 @@ func (s *Server) Handler() http.Handler {
 	r.Use(middleware.LatencyTimer(s.stats))
 
 	// Public endpoints:
-
+	// 健康检查
 	r.Get("/health", handler.Wrap(s.healthCheckHandler))
 
 	r.Get("/blobs/{digest}/locations", handler.Wrap(s.getLocationsHandler))

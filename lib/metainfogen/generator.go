@@ -21,9 +21,9 @@ import (
 	"github.com/uber/kraken/lib/store/metadata"
 )
 
-// 生成分片元数据信息
-// Generator wraps static piece length configuration in order to determinstically
+// Generator wraps static piece length configuration in order to deterministically
 // generate metainfo.
+// 生成分片元数据信息
 type Generator struct {
 	pieceLengthConfig *pieceLengthConfig
 	cas               *store.CAStore

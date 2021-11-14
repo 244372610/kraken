@@ -126,6 +126,7 @@ func (m *Manager) Register(namespace string, c Client) error {
 
 // GetClient matches namespace to the configured Client. Returns ErrNamespaceNotFound
 // if no clients match namespace.
+// 根据 namespace 获取对应的 Client
 func (m *Manager) GetClient(namespace string) (Client, error) {
 	if namespace == NoopNamespace {
 		return NoopClient{}, nil

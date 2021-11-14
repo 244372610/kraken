@@ -312,6 +312,7 @@ func Send(method, rawurl string, options ...SendOption) (*http.Response, error) 
 		// TODO (@evelynl): disable retry after tls migration.
 		if err != nil && req.URL.Scheme == "https" && !opts.httpFallbackDisabled {
 			originalErr := err
+			// 从 https 降级到 http
 			resp, err = fallbackToHTTP(client, method, opts)
 			if err != nil {
 				// Sometimes the request fails for a reason unrelated to https.

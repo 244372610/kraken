@@ -52,7 +52,7 @@ func (f *factory) Create(
 }
 
 // Config defines http post/get upload/download urls
-// and http connnection parameters. The URLs come with string format
+// and http connection parameters. The URLs come with string format
 // specifiers and define how to pass sha256 parameters
 type Config struct {
 	UploadURL       string                            `yaml:"upload_url"`   // http upload post url

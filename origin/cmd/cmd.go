@@ -182,12 +182,14 @@ func Run(flags *Flags, opts ...Option) {
 		log.Fatalf("Failed to create castore: %s", err)
 	}
 
+	// 构造 peer 上下文
 	pctx, err := core.NewPeerContext(
 		config.PeerIDFactory, flags.Zone, flags.KrakenCluster, flags.PeerIP, flags.PeerPort, true)
 	if err != nil {
 		log.Fatalf("Failed to create peer context: %s", err)
 	}
 
+	// 创建后段存储
 	backendManager, err := backend.NewManager(config.Backends, config.Auth)
 	if err != nil {
 		log.Fatalf("Error creating backend manager: %s", err)
@@ -260,6 +262,7 @@ func Run(flags *Flags, opts ...Option) {
 		}
 	}
 
+	// 创建 server
 	server, err := blobserver.New(
 		config.BlobServer,
 		stats,
@@ -282,6 +285,7 @@ func Run(flags *Flags, opts ...Option) {
 
 	go func() { log.Fatal(server.ListenAndServe(h)) }()
 
+	// 启动 nginx
 	log.Info("Starting nginx...")
 	log.Fatal(nginx.Run(
 		config.Nginx,

@@ -32,7 +32,9 @@ type info struct {
 	PieceLength int64
 	// 分片md5
 	PieceSums   []uint32
+	// Digest#hex
 	Name        string
+	// 文件长度
 	Length      int64
 }
 
@@ -110,7 +112,7 @@ func (mi *MetaInfo) GetPieceLength(i int) int64 {
 		return 0
 	}
 	if i == len(mi.info.PieceSums)-1 {
-		// Last piece.
+		// Last piece. 最后一个分片的计算，文件总长度 - 之前的分片总长
 		return mi.info.Length - mi.info.PieceLength*int64(i)
 	}
 	return mi.info.PieceLength

@@ -20,7 +20,7 @@ import (
 )
 
 // Config defines s3 connection specific
-// parameters and authetication credentials
+// parameters and authentication credentials
 type Config struct {
 	Username         string `yaml:"username"`         // IAM username for selecting credentials.
 	Region           string `yaml:"region"`           // AWS S3 region
