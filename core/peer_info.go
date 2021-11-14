@@ -42,6 +42,7 @@ func NewPeerInfo(
 }
 
 // PeerInfoFromContext derives PeerInfo from a PeerContext.
+// 从 peerContext 构造 PeerInfo
 func PeerInfoFromContext(pctx PeerContext, complete bool) *PeerInfo {
 	return NewPeerInfo(pctx.PeerID, pctx.IP, pctx.Port, pctx.Origin, complete)
 }

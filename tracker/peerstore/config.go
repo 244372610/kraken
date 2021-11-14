@@ -21,6 +21,7 @@ import (
 //
 // NOTE: By default, the LocalStore implementation is used. Redis configuration
 // is ignored unless RedisConfig.Enabled is true.
+// 默认使用 local，除非 RedisConfig.Enabled 设置成 true
 type Config struct {
 	Local LocalConfig `yaml:"local"`
 	Redis RedisConfig `yaml:"redis"`
