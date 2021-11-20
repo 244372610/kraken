@@ -18,6 +18,7 @@ import (
 )
 
 // FileStore manages files and their metadata. Actual operations are done through FileOp.
+// 管理文件和他们的元数据，真实的操作是通过 FileOp 来完成
 type FileStore interface {
 	NewFileOp() FileOp
 }

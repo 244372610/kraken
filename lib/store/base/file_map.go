@@ -37,6 +37,7 @@ type FileMap interface {
 
 var _ FileMap = (*lruFileMap)(nil)
 
+// fileEntryWithAccessTime fileEntry 和 lastAccessTime
 type fileEntryWithAccessTime struct {
 	sync.RWMutex
 
@@ -49,6 +50,7 @@ type fileEntryWithAccessTime struct {
 // lruFileMap implements FileMap interface, with an optional max capacity, and
 // will evict least recently accessed entry when the capacity is reached, which
 // will only be updated by LoadForRead and LoadForWrite.
+// 超过容量会自动驱逐最近最少被访问的 entry， 如果容量为0则表示不进行驱逐. 只有 syncRemoveOldestIfNeeded 方法会用到
 type lruFileMap struct {
 	sync.Mutex
 
@@ -78,19 +80,22 @@ func NewLRUFileMap(size int, clk clock.Clock) FileMap {
 
 // NewLATFileMap creates a new file map that tracks last access time, but no
 // auto-eviction.
-// NewLATFileMap 创建一个跟踪上次访问时间的新文件映射，但没有自动回收。
+// NewLATFileMap 创建一个跟踪上次访问时间的新文件映射，但没有自动回收。和上面的 LRUFileMap 相比，size设置为0
 func NewLATFileMap(clk clock.Clock) FileMap {
 	m := &lruFileMap{
 		size:           0, // Disable eviction.
 		clk:            clk,
 		timeResolution: time.Minute * 5,
+		// 按照 access 进行排序的列表
 		queue:          list.New(),
+		// 映射 name 到 element
 		elements:       make(map[string]*list.Element),
 	}
 
 	return m
 }
 
+// 获取对应文件和访问时间，并把对应元素移动到链表头部
 func (fm *lruFileMap) get(name string) (*fileEntryWithAccessTime, bool) {
 	if element, ok := fm.elements[name]; ok {
 		fm.queue.MoveToFront(element)
@@ -99,6 +104,7 @@ func (fm *lruFileMap) get(name string) (*fileEntryWithAccessTime, bool) {
 	return nil, false
 }
 
+// 加锁获取
 func (fm *lruFileMap) syncGet(name string) (*fileEntryWithAccessTime, bool) {
 	fm.Lock()
 	defer fm.Unlock()
@@ -106,6 +112,7 @@ func (fm *lruFileMap) syncGet(name string) (*fileEntryWithAccessTime, bool) {
 	return fm.get(name)
 }
 
+// 获取并修改访问时间
 func (fm *lruFileMap) syncGetAndTouch(name string) (*fileEntryWithAccessTime, bool) {
 	fm.Lock()
 	defer fm.Unlock()
@@ -127,6 +134,7 @@ func (fm *lruFileMap) syncGetAndTouch(name string) (*fileEntryWithAccessTime, bo
 	return e, true
 }
 
+// 增加一个元素，如果存在就不增加，不存在则将元素插入到链表头部
 func (fm *lruFileMap) add(name string, e *fileEntryWithAccessTime) bool {
 	if _, ok := fm.elements[name]; !ok {
 		element := fm.queue.PushFront(e)
@@ -136,6 +144,7 @@ func (fm *lruFileMap) add(name string, e *fileEntryWithAccessTime) bool {
 	return false
 }
 
+// 返回链表的最后一个元素，最近最长时间没有被访问的元素
 func (fm *lruFileMap) getOldest() (*fileEntryWithAccessTime, bool) {
 	if e := fm.queue.Back(); e != nil {
 		return e.Value.(*fileEntryWithAccessTime), true
@@ -143,6 +152,7 @@ func (fm *lruFileMap) getOldest() (*fileEntryWithAccessTime, bool) {
 	return nil, false
 }
 
+// 删除对应元素
 func (fm *lruFileMap) remove(name string) (*fileEntryWithAccessTime, bool) {
 	if e, ok := fm.elements[name]; ok {
 		delete(fm.elements, name)
@@ -268,6 +278,7 @@ func (fm *lruFileMap) TryStore(name string, entry FileEntry, f func(string, File
 // While f executes, it is guaranteed that k will not be deleted from the map.
 // Returns false if k was not found.
 // It updates last access time and file size.
+// 和 LoadForRead 实现逻辑一致，只是读锁换成了写锁
 func (fm *lruFileMap) LoadForWrite(name string, f func(string, FileEntry)) bool {
 	e, ok := fm.syncGet(name)
 	if !ok {
@@ -359,8 +370,10 @@ func (fm *lruFileMap) Delete(name string, f func(string, FileEntry) bool) bool {
 	// Now that we have the entry lock, make sure k was not deleted or
 	// overwritten.
 	if ne, ok := fm.syncGet(name); !ok {
+		// 已经被删除
 		return false
 	} else if ne != e {
+		// 已经被重写
 		return false
 	}
 

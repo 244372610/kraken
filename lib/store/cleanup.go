@@ -46,6 +46,7 @@ func (c CleanupConfig) applyDefaults() CleanupConfig {
 	return c
 }
 
+// 存储清理管理器
 type cleanupManager struct {
 	clk      clock.Clock
 	stats    tally.Scope
@@ -110,6 +111,7 @@ func (m *cleanupManager) stop() {
 
 // scan scans the op for idle or expired files. Also returns the total disk usage
 // of op.
+// 清理文件并统计磁盘用量
 func (m *cleanupManager) scan(
 	op base.FileOp, tti time.Duration, ttl time.Duration) (usage int64, err error) {
 
@@ -142,6 +144,7 @@ func (m *cleanupManager) readyForDeletion(
 	tti time.Duration,
 	ttl time.Duration) (bool, error) {
 
+	// 距离上次的修改时间
 	if ttl > 0 && m.clk.Now().Sub(info.ModTime()) > ttl {
 		return true, nil
 	}
@@ -152,5 +155,7 @@ func (m *cleanupManager) readyForDeletion(
 	} else if err != nil {
 		return false, fmt.Errorf("get file lat: %s", err)
 	}
+
+	// 距离上次的访问时间
 	return m.clk.Now().Sub(lat.Time) > tti, nil
 }

@@ -29,8 +29,10 @@ import (
 type CADownloadStore struct {
 	backend       base.FileStore
 	downloadState base.FileState
-	cacheState    base.FileState  // FileState决定文件所在的目录。文件在任何给定时间只能处于一种状态。
-	cleanup       *cleanupManager // 空间清理器
+	// FileState决定文件所在的目录。文件在任何给定时间只能处于一种状态。
+	cacheState    base.FileState
+	// 空间清理器
+	cleanup       *cleanupManager
 }
 
 // NewCADownloadStore creates a new CADownloadStore.

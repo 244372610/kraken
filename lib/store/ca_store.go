@@ -30,6 +30,7 @@ import (
 )
 
 // CAStore allows uploading / caching content-addressable files.
+// 允许上传/缓存 content-addressable 文件
 type CAStore struct {
 	config CAStoreConfig
 

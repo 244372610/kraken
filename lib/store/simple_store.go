@@ -25,6 +25,7 @@ import (
 )
 
 // SimpleStore allows uploading / caching raw files of any format.
+// 和 CAStore 做对比
 type SimpleStore struct {
 	*uploadStore
 	*cacheStore
@@ -56,8 +57,9 @@ func NewSimpleStore(config SimpleStoreConfig, stats tally.Scope) (*SimpleStore, 
 		return nil, fmt.Errorf("new cleanup manager: %s", err)
 	}
 
-	// 添加清理任务
+	// 添加上传目录清理任务
 	cleanup.addJob("upload", config.UploadCleanup, uploadStore.newFileOp())
+	// 添加缓存目录清理任务
 	cleanup.addJob("cache", config.CacheCleanup, cacheStore.newFileOp())
 
 	return &SimpleStore{uploadStore, cacheStore, cleanup}, nil

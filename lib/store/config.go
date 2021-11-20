@@ -16,7 +16,8 @@ package store
 // Volume - if provided, volumes are used to store the actual files.
 // Symlinks will be created under state directories.
 // This configuration is needed on hosts with multiple disks.
-// host上有多个磁盘需要这个配置
+// host 上有多个磁盘需要这个配置
+// Volume 用来存储真正的文件
 type Volume struct {
 	Location string
 	Weight   int

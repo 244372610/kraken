@@ -24,6 +24,7 @@ import (
 
 // uploadStore provides basic upload file operations. Intended to be embedded
 // in a higher level struct.
+// 提供一个基本的上传文件操作
 type uploadStore struct {
 	// 主目录
 	state   base.FileState
