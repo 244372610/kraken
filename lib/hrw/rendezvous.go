@@ -45,7 +45,7 @@ type UIntToFloat func(bytesUInt []byte, maxValue []byte, hasher hash.Hash) float
 // RendezvousHashNode represents a weighted node in a hashing schema.
 type RendezvousHashNode struct {
 	RHash  *RendezvousHash // parent hash structure with all the configuration
-	Label  string          // some string ientifying a unique node label
+	Label  string          // some string identifying a unique node label
 	Weight int             // node weight, usually denotes node's capacity
 }
 

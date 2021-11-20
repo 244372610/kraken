@@ -33,6 +33,7 @@ import (
 
 // Locations queries cluster for the locations of d.
 func Locations(p Provider, cluster hostlist.List, d core.Digest) (locs []string, err error) {
+	// 随机选取 3 个地址
 	addrs := cluster.Resolve().Sample(3)
 	if len(addrs) == 0 {
 		return nil, errors.New("cluster is empty")
@@ -42,6 +43,7 @@ func Locations(p Provider, cluster hostlist.List, d core.Digest) (locs []string,
 		if err != nil {
 			continue
 		}
+		// 如果有一个成功了即可以停止
 		break
 	}
 	return locs, err
@@ -115,7 +117,7 @@ func (c *clusterClient) UploadBlob(namespace string, d core.Digest, blob io.Read
 		return fmt.Errorf("resolve clients: %s", err)
 	}
 
-	// We prefer the origin with highest hashing score so the first origin will handle
+	// We prefer the origin with the highest hashing score so the first origin will handle
 	// replication to origins with lower score. This is because we want to reduce upload
 	// conflicts between local replicas.
 	for _, client := range clients {

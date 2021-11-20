@@ -131,6 +131,7 @@ func (s *Server) Handler() http.Handler {
 	// 健康检查
 	r.Get("/health", handler.Wrap(s.healthCheckHandler))
 
+	// 确定对应的 digest 应该上传到哪几个服务器上
 	r.Get("/blobs/{digest}/locations", handler.Wrap(s.getLocationsHandler))
 
 	// 创建uploadFile，并返回文件名称
@@ -142,8 +143,10 @@ func (s *Server) Handler() http.Handler {
 	// 数据上传完毕
 	r.Put("/namespace/{namespace}/blobs/{digest}/uploads/{uid}", handler.Wrap(s.commitClusterUploadHandler))
 
+	// 下载 blob
 	r.Get("/namespace/{namespace}/blobs/{digest}", handler.Wrap(s.downloadBlobHandler))
 
+	// 远程复制，将本地blob复制到远程
 	r.Post("/namespace/{namespace}/blobs/{digest}/remote/{remote}", handler.Wrap(s.replicateToRemoteHandler))
 
 	r.Post("/forcecleanup", handler.Wrap(s.forceCleanupHandler))

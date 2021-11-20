@@ -30,7 +30,7 @@ type PassiveRing interface {
 	passiveFilter healthcheck.PassiveFilter
 }
 
- // NewPassive creats a new PassiveRing.
+ // NewPassive creates a new PassiveRing.
 func NewPassive(
 	config Config,
 	cluster hostlist.List,
