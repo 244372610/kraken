@@ -73,6 +73,7 @@ func (q *QueueImpl) Ready(h core.InfoHash) {
 	if !q.pending[h] {
 		return
 	}
+	// 如果 q.pending[h] 是true
 	delete(q.pending, h)
 	q.readyQueue.PushBack(h)
 }
@@ -91,6 +92,7 @@ func (q *QueueImpl) Eject(h core.InfoHash) {
 // DisabledQueue is a Queue which ignores all input and constantly returns that
 // there are no torrents in the queue. Suitable for origin peers which want to
 // disable announcing.
+// 用于 origin
 type DisabledQueue struct{}
 
 // Disabled returns a new DisabledQueue.

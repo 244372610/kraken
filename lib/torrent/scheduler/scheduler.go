@@ -365,7 +365,7 @@ func (s *scheduler) announceLoop() {
 	s.announcer.Ticker(s.done)
 }
 
-// 告诉 traker 下载结果
+// 告诉 traker 下载结果,是否完成
 func (s *scheduler) announce(d core.Digest, h core.InfoHash, complete bool) {
 	peers, err := s.announcer.Announce(d, h, complete)
 	if err != nil {

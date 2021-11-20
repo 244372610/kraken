@@ -129,8 +129,8 @@ func newConn(
 // Start starts message processing on c. Note, once c has been started, it may
 // close itself if it encounters an error reading/writing to the underlying
 // socket.
+// 开始处理 conn 上的消息
 func (c *Conn) Start() {
-	// TODO 可以用到现有项目
 	c.startOnce.Do(func() {
 		c.wg.Add(2)
 		go c.readLoop()
