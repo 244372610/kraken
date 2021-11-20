@@ -52,6 +52,7 @@ func NewSimpleStore(config SimpleStoreConfig, stats tally.Scope) (*SimpleStore, 
 		return nil, fmt.Errorf("new cache store: %s", err)
 	}
 
+	// 创建存储清理管理器
 	cleanup, err := newCleanupManager(clock.New(), stats)
 	if err != nil {
 		return nil, fmt.Errorf("new cleanup manager: %s", err)
