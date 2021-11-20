@@ -17,13 +17,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/uber/kraken/core"
 	"github.com/andres-erbsen/clock"
+	"github.com/uber/kraken/core"
 	"github.com/willf/bitset"
 )
 
 // peer consolidates bookeeping for a remote peer.
 type peer struct {
+	// remote peerID
 	id core.PeerID
 
 	// Tracks the pieces which the remote peer has.
