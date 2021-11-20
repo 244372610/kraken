@@ -32,6 +32,7 @@ func (f persistFactory) Create(suffix string) Metadata {
 
 // Persist marks whether a blob should be persisted.
 type Persist struct {
+	// 标记blob是否可以被删除，如果是true则不能够被删除
 	Value bool
 }
 

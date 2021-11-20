@@ -239,6 +239,7 @@ type localFileEntry struct {
 	name             string
 	// 文件相对路径，相对于 state
 	relativeDataPath string        // Relative path to data file.
+	// 相关联的元数据信息
 	metadata         stringset.Set // Metadata is identified by suffix.
 }
 
@@ -266,6 +267,7 @@ func (entry *localFileEntry) GetName() string {
 }
 
 // GetPath returns current path of the file.
+// 获取文件路径
 func (entry *localFileEntry) GetPath() string {
 	return filepath.Join(entry.state.GetDirectory(), entry.relativeDataPath)
 }
@@ -316,7 +318,7 @@ func (entry *localFileEntry) Create(targetState FileState, size int64) error {
 }
 
 // Reload tries to reload a file that doesn't exist in memory from disk.
-// 从磁盘加载 fileEntry 的元数据信息
+// 从磁盘加载 fileEntry 的元数据信息到 entry 中
 func (entry *localFileEntry) Reload() error {
 	// Verify the file is still on disk.
 	if _, err := os.Stat(entry.GetPath()); err != nil {
@@ -344,6 +346,7 @@ func (entry *localFileEntry) Reload() error {
 }
 
 // MoveFrom moves an unmanaged file in.
+// 将 sourcePath 路径的文件移动到 targetState 下
 func (entry *localFileEntry) MoveFrom(targetState FileState, sourcePath string) error {
 	if entry.state != targetState {
 		return &FileStateError{
@@ -436,6 +439,7 @@ func (entry *localFileEntry) LinkTo(targetPath string) error {
 
 // Delete removes file and all of its metadata files from disk. If persist
 // metadata is present and true, delete returns ErrFilePersisted.
+// 删除文件和关联的元数据文件
 func (entry *localFileEntry) Delete() error {
 	var persist metadata.Persist
 	if err := entry.GetMetadata(&persist); err != nil {
@@ -480,11 +484,12 @@ func (entry *localFileEntry) GetReadWriter() (FileReadWriter, error) {
 	return readWriter, nil
 }
 
+// 获取元数据文件路径
 func (entry *localFileEntry) getMetadataPath(md metadata.Metadata) string {
 	return filepath.Join(filepath.Dir(entry.GetPath()), md.GetSuffix())
 }
 
-// AddMetadata adds a new metadata type to metadata. This is primirily used during reload.
+// AddMetadata adds a new metadata type to metadata. This is primarily used during reload.
 func (entry *localFileEntry) AddMetadata(md metadata.Metadata) error {
 	filePath := entry.getMetadataPath(md)
 
