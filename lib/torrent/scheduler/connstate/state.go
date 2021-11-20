@@ -78,6 +78,7 @@ func (e *blacklistEntry) Remaining(now time.Time) time.Duration {
 // should be skipped in each peer handout.
 //
 // Note, State is NOT thread-safe. Synchronization must be provided by the client.
+// 一个 peer 的 connection 由 torrent info hash 和 peer id 确认
 type State struct {
 	config      Config
 	clk         clock.Clock
@@ -143,6 +144,7 @@ func (s *State) Saturated(h core.InfoHash) bool {
 
 // Blacklist blacklists peerID/h for the configured BlacklistDuration.
 // Returns error if the connection is already blacklisted.
+// 加入黑名单
 func (s *State) Blacklist(peerID core.PeerID, h core.InfoHash) error {
 	if s.config.DisableBlacklist {
 		return nil
