@@ -36,11 +36,16 @@ import (
 type Client interface {
 	Addr() string
 
+	// Locations 返回哪些源服务器地址列表上有 d
 	Locations(d core.Digest) ([]string, error)
+
+	// DeleteBlob 删除
 	DeleteBlob(d core.Digest) error
 	TransferBlob(d core.Digest, blob io.Reader) error
 
 	Stat(namespace string, d core.Digest) (*core.BlobInfo, error)
+
+	// StatLocal 在本地查找 blob 的信息
 	StatLocal(namespace string, d core.Digest) (*core.BlobInfo, error)
 
 	GetMetaInfo(namespace string, d core.Digest) (*core.MetaInfo, error)
@@ -97,7 +102,6 @@ func (c *HTTPClient) Addr() string {
 }
 
 // Locations returns the origin server addresses which d is sharded on.
-// 返回 d 被分片的源服务器地址列表。
 func (c *HTTPClient) Locations(d core.Digest) ([]string, error) {
 	r, err := httputil.Get(
 		fmt.Sprintf("http://%s/blobs/%s/locations", c.addr, d),

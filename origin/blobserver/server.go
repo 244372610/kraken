@@ -133,8 +133,13 @@ func (s *Server) Handler() http.Handler {
 
 	r.Get("/blobs/{digest}/locations", handler.Wrap(s.getLocationsHandler))
 
+	// 创建uploadFile，并返回文件名称
 	r.Post("/namespace/{namespace}/blobs/{digest}/uploads", handler.Wrap(s.startClusterUploadHandler))
+
+	// 上传一个文件数据块
 	r.Patch("/namespace/{namespace}/blobs/{digest}/uploads/{uid}", handler.Wrap(s.patchClusterUploadHandler))
+
+	// 数据上传完毕
 	r.Put("/namespace/{namespace}/blobs/{digest}/uploads/{uid}", handler.Wrap(s.commitClusterUploadHandler))
 
 	r.Get("/namespace/{namespace}/blobs/{digest}", handler.Wrap(s.downloadBlobHandler))

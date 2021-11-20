@@ -42,6 +42,7 @@ func runChunkedUpload(u uploader, d core.Digest, blob io.Reader, chunkSize int64
 }
 
 func runChunkedUploadHelper(u uploader, d core.Digest, blob io.Reader, chunkSize int64) error {
+	// 开始上传，获取要上传文件的位置
 	uid, err := u.start(d)
 	if err != nil {
 		return err
@@ -58,11 +59,13 @@ func runChunkedUploadHelper(u uploader, d core.Digest, blob io.Reader, chunkSize
 		}
 		chunk := bytes.NewReader(buf[:n])
 		stop := pos + int64(n)
+		// 不断上传数据分片
 		if err := u.patch(d, uid, pos, stop, chunk); err != nil {
 			return err
 		}
 		pos = stop
 	}
+	// 上传完毕
 	return u.commit(d, uid)
 }
 

@@ -144,6 +144,7 @@ func (s *CAStore) verify(r io.Reader, name string) error {
 	}
 
 	if !s.config.SkipHashVerification {
+		// 需要计算上传文件数据的hash值是否正确
 		digester := core.NewDigester()
 		computed, err := digester.FromReader(r)
 		if err != nil {
