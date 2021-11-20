@@ -151,7 +151,6 @@ func newScheduler(
 		preemptionTick = overrides.clock.Tick(config.PreemptionInterval)
 	}
 
-	// 和其他的peers握手
 	handshaker, err := conn.NewHandshaker(
 		config.Conn, stats, overrides.clock, netevents, pctx.PeerID, eventLoop, slogger)
 	if err != nil {

@@ -30,6 +30,7 @@ import (
 
 // event describes an external event which modifies state. While the event is
 // applying, it is guaranteed to be the only accessor of state.
+// event 是 state 的唯一访问者， see state
 type event interface {
 	apply(*state)
 }
@@ -100,22 +101,27 @@ type liftedEventLoop struct {
 }
 
 // liftEventLoop lifts events from subpackages into an eventLoop.
+// 将事件从子包中提升到eventLoop中
 func liftEventLoop(l eventLoop) *liftedEventLoop {
 	return &liftedEventLoop{l}
 }
 
+// ConnClosed 现实了 conn.Events
 func (l *liftedEventLoop) ConnClosed(c *conn.Conn) {
 	l.send(connClosedEvent{c})
 }
 
+// DispatcherComplete 实现了 dispatch.Events
 func (l *liftedEventLoop) DispatcherComplete(d *dispatch.Dispatcher) {
 	l.send(dispatcherCompleteEvent{d})
 }
 
+// PeerRemoved 实现了 dispatch.Events
 func (l *liftedEventLoop) PeerRemoved(peerID core.PeerID, h core.InfoHash) {
 	l.send(peerRemovedEvent{peerID, h})
 }
 
+// AnnounceTick 实现了 announcer.Events
 func (l *liftedEventLoop) AnnounceTick() {
 	l.send(announceTickEvent{})
 }
