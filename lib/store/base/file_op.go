@@ -35,7 +35,9 @@ const (
 // FileOp performs one file or metadata operation on FileStore, given a list of
 // acceptable states.
 type FileOp interface {
+	// AcceptState adds a new state to the acceptable states list.
 	AcceptState(state FileState) FileOp
+	// GetAcceptableStates returns a set of acceptable states.
 	GetAcceptableStates() map[FileState]interface{}
 	// CreateFile 创建文件
 	CreateFile(name string, createState FileState, len int64) error
@@ -80,13 +82,11 @@ func NewLocalFileOp(s *localFileStore) FileOp {
 	}
 }
 
-// AcceptState adds a new state to the acceptable states list.
 func (op *localFileOp) AcceptState(state FileState) FileOp {
 	op.states[state] = struct{}{}
 	return op
 }
 
-// GetAcceptableStates returns a set of acceptable states.
 func (op *localFileOp) GetAcceptableStates() map[FileState]interface{} {
 	return op.states
 }
@@ -112,8 +112,9 @@ func (op *localFileOp) verifyStateHelper(name string, entry FileEntry) error {
 // Note it doesn't try to verify states or reload file from all possible states.
 // If reload succeeded, return true;
 // If file already exists in memory, return false;
-// If file is neither in memory or on disk, return false with os.ErrNotExist.
+// If file is neither in memory nor on disk, return false with os.ErrNotExist.
 func (op *localFileOp) reloadFileEntryHelper(name string) (reloaded bool, err error) {
+	// 如果文件已经存在内存中，直接返回
 	if op.s.fileMap.Contains(name) {
 		return false, nil
 	}

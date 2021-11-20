@@ -31,6 +31,7 @@ type localFileStore struct {
 
 // NewLocalFileStore initializes and returns a new FileStore.
 func NewLocalFileStore(clk clock.Clock) FileStore {
+	// 创建一个不会清除存储中最近最少访问元素的map
 	m := NewLATFileMap(clk)
 	return &localFileStore{
 		fileEntryFactory: NewLocalFileEntryFactory(),
@@ -53,6 +54,7 @@ func NewCASFileStore(clk clock.Clock) FileStore {
 // NewLRUFileStore initializes and returns a new LRU FileStore.
 // When size exceeds limit, the least recently accessed entry will be removed.
 func NewLRUFileStore(size int, clk clock.Clock) FileStore {
+	// 会清楚最近最少访问的文件
 	m := NewLRUFileMap(size, clk)
 	return &localFileStore{
 		fileEntryFactory: NewLocalFileEntryFactory(),

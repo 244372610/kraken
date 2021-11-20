@@ -278,6 +278,7 @@ func (entry *localFileEntry) GetStat() (os.FileInfo, error) {
 }
 
 // Create creates a file on disk.
+// 真正在磁盘上创建文件
 func (entry *localFileEntry) Create(targetState FileState, size int64) error {
 	if entry.state != targetState {
 		return &FileStateError{
