@@ -61,6 +61,7 @@ type Scheduler interface {
 // - Initializing outgoing connections.  // 初始化 outgoing conn
 // - Dispatching connections to torrents.
 // - Pre-empting existing connections when better options are available (TODO).
+// scheduler 管理 peer 的全局状态
 type scheduler struct {
 	pctx           core.PeerContext
 	config         Config
@@ -316,11 +317,13 @@ func (s *scheduler) runEventLoop(aq announcequeue.Queue) {
 }
 
 // listenLoop accepts incoming connections.
+// 接受其他Peer的连接请求
 func (s *scheduler) listenLoop() {
 	defer s.wg.Done()
 
 	s.log().Infof("Listening on %s", s.listener.Addr().String())
 	for {
+		// 接收到其他 Peer 的连接请求
 		nc, err := s.listener.Accept()
 		if err != nil {
 			// TODO Need some way to make this gracefully exit.
@@ -385,6 +388,7 @@ func (s *scheduler) failIncomingHandshake(pc *conn.PendingConn, err error) {
 
 // establishIncomingHandshake attempts to establish a pending conn initialized
 // by a remote peer. Success / failure is communicated via events.
+// 远程 peer 想建立连接
 func (s *scheduler) establishIncomingHandshake(pc *conn.PendingConn, rb conn.RemoteBitfields) {
 	info, err := s.torrentArchive.Stat(pc.Namespace(), pc.Digest())
 	if err != nil {

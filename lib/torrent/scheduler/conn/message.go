@@ -97,18 +97,18 @@ func NewCompleteMessage() *Message {
 	}
 }
 
-// 写数据
+// 向连接中写数据
 func sendMessage(nc net.Conn, msg *p2p.Message) error {
 	data, err := proto.Marshal(msg)
 	if err != nil {
 		return fmt.Errorf("proto marshal: %s", err)
 	}
-	// 写数据长度
+	// 先写数据长度
 	if err := binary.Write(nc, binary.BigEndian, uint32(len(data))); err != nil {
 		return fmt.Errorf("write data length: %s", err)
 	}
 	for len(data) > 0 {
-		// 写数据
+		// 再写数据
 		n, err := nc.Write(data)
 		if err != nil {
 			return fmt.Errorf("write data: %s", err)
@@ -127,7 +127,7 @@ func sendMessageWithTimeout(nc net.Conn, msg *p2p.Message, timeout time.Duration
 	return sendMessage(nc, msg)
 }
 
-// 接受数据
+// 从 nc 中读取数据
 func readMessage(nc net.Conn) (*p2p.Message, error) {
 	var msglen [4]byte
 	// 获取数据长度

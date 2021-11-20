@@ -294,6 +294,7 @@ func (e announceResultEvent) apply(s *state) {
 			}
 			continue
 		}
+		// 和对端 peer 创建连接
 		go s.sched.initializeOutgoingHandshake(
 			p, ctrl.dispatcher.Stat(), ctrl.dispatcher.RemoteBitfields(), ctrl.namespace)
 	}

@@ -31,6 +31,7 @@ import (
 )
 
 // RemoteBitfields represents the bitfields of an agent's peers for a given torrent.
+// 对于一个给定的 torrent， peerID和bitfield的对应关系
 type RemoteBitfields map[core.PeerID]*bitset.BitSet
 
 func (rb RemoteBitfields) marshalBinary() (map[string][]byte, error) {
@@ -72,7 +73,7 @@ type handshake struct {
 	namespace       string
 }
 
-// 转换成 bitfield message
+// toP2PMessage 转换成 bitfield message
 func (h *handshake) toP2PMessage() (*p2p.Message, error) {
 	b, err := h.bitfield.MarshalBinary()
 	if err != nil {
@@ -95,7 +96,7 @@ func (h *handshake) toP2PMessage() (*p2p.Message, error) {
 	}, nil
 }
 
-// 从 p2p message 转换成 shake
+// handshakeFromP2PMessage 从 p2p message 转换成 shake
 func handshakeFromP2PMessage(m *p2p.Message) (*handshake, error) {
 	if m.Type != p2p.Message_BITFIELD {
 		return nil, fmt.Errorf("expected bitfield message, got %s", m.Type)
@@ -230,6 +231,7 @@ func NewHandshaker(
 
 // Accept upgrades a raw network connection opened by a remote peer into a
 // PendingConn.
+// 将由远程点打开的原始网络连接升级为 PendingConn
 func (h *Handshaker) Accept(nc net.Conn) (*PendingConn, error) {
 	hs, err := h.readHandshake(nc)
 	if err != nil {
@@ -240,6 +242,7 @@ func (h *Handshaker) Accept(nc net.Conn) (*PendingConn, error) {
 
 // Establish upgrades a PendingConn returned via Accept into a fully
 // established Conn.
+// 将 PendingConn（half-opened）升级成全连接状态
 func (h *Handshaker) Establish(
 	pc *PendingConn,
 	info *storage.TorrentInfo,
