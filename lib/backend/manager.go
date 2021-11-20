@@ -27,6 +27,7 @@ var (
 	ErrNamespaceNotFound = errors.New("no matches for namespace")
 )
 
+// namespace 到 client 的映射
 type backend struct {
 	regexp *regexp.Regexp
 	client Client

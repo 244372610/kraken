@@ -189,12 +189,13 @@ func Run(flags *Flags, opts ...Option) {
 		log.Fatalf("Failed to create peer context: %s", err)
 	}
 
-	// 创建后段存储
+	// 创建后端存储管理器
 	backendManager, err := backend.NewManager(config.Backends, config.Auth)
 	if err != nil {
 		log.Fatalf("Error creating backend manager: %s", err)
 	}
 
+	// 数据库配置
 	localDB, err := localdb.New(config.LocalDB)
 	if err != nil {
 		log.Fatalf("Error creating local db: %s", err)

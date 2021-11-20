@@ -33,6 +33,7 @@ type FileStore interface {
 }
 
 // Executor executes write back tasks.
+// 执行回写任务
 type Executor struct {
 	stats    tally.Scope
 	fs       FileStore
@@ -74,6 +75,7 @@ func (e *Executor) Exec(r persistedretry.Task) error {
 func (e *Executor) upload(t *Task) error {
 	start := time.Now()
 
+	// 获取对应客户端
 	client, err := e.backends.GetClient(t.Namespace)
 	if err != nil {
 		if err == backend.ErrNamespaceNotFound {
@@ -87,6 +89,7 @@ func (e *Executor) upload(t *Task) error {
 
 	if _, err := client.Stat(t.Namespace, t.Name); err == nil {
 		// File already uploaded, no-op.
+		// 文件已经上传成功
 		return nil
 	}
 

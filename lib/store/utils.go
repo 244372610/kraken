@@ -22,6 +22,7 @@ import (
 	"github.com/uber/kraken/utils/osutil"
 )
 
+// createOrUpdateSymlink 创建 targetPath 到 sourcePath 的软链接
 func createOrUpdateSymlink(sourcePath, targetPath string) error {
 	if _, err := os.Stat(targetPath); err == nil {
 		if existingSource, err := os.Readlink(targetPath); err != nil {

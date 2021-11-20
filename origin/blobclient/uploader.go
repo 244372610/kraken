@@ -70,6 +70,7 @@ func runChunkedUploadHelper(u uploader, d core.Digest, blob io.Reader, chunkSize
 }
 
 // transferClient executes chunked uploads for internal blob transfers.
+// 集群内部的上传操作
 type transferClient struct {
 	addr string
 	tls  *tls.Config
@@ -122,6 +123,7 @@ const (
 )
 
 // uploadClient executes chunked uploads for external cluster upload operations.
+// 用于集群外部的上传操作
 type uploadClient struct {
 	addr       string
 	namespace  string

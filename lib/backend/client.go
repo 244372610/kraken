@@ -33,6 +33,7 @@ func Register(name string, factory ClientFactory) {
 }
 
 // getFactory returns backend client factory given client name.
+// 根据 client name 获取对应的 backend client
 func getFactory(name string) (ClientFactory, error) {
 	factory, ok := _factories[name]
 	if !ok {
