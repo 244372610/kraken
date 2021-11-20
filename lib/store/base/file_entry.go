@@ -65,12 +65,13 @@ type FileEntryFactory interface {
 	GetRelativePath(name string) string
 
 	// ListNames lists all file entry names in state.
+	// 一个文件夹下的文件列表
 	ListNames(state FileState) ([]string, error)
 }
 
 // FileEntry manages one file and its metadata.
 // It doesn't guarantee thread-safety; That should be handled by FileMap.
-// 管理数据和metadata信息
+// 管理数据和他的 metadata 信息
 type FileEntry interface {
 	GetState() FileState
 	GetName() string
@@ -129,7 +130,7 @@ func (f *localFileEntryFactory) GetRelativePath(name string) string {
 	return filepath.Join(name, DefaultDataFileName)
 }
 
-// ListNames returns the names of all entries in state's directory.
+// ListNames returns the names of all entries in state's directory.（包含子目录）
 func (f *localFileEntryFactory) ListNames(state FileState) ([]string, error) {
 	var names []string
 
@@ -144,6 +145,7 @@ func (f *localFileEntryFactory) ListNames(state FileState) ([]string, error) {
 		}
 		for _, info := range infos {
 			if info.IsDir() {
+				// 递归
 				if err := readNames(filepath.Join(dir, info.Name())); err != nil {
 					return err
 				}
@@ -185,7 +187,7 @@ func (f *casFileEntryFactory) Create(name string, state FileState) (FileEntry, e
 // Example:
 // name = 07123e1f482356c415f684407a3b8723e10b2cbbc0b8fcd6282c49d37c9c1abc
 // shardIDLength = 2
-// relative path = 07/12/07123e1f482356c415f684407a3b8723e10b2cbbc0b8fcd6282c49d37c9c1abc
+// relative path = 07/12/07123e1f482356c415f684407a3b8723e10b2cbbc0b8fcd6282c49d37c9c1abc/data
 func (f *casFileEntryFactory) GetRelativePath(name string) string {
 	filePath := ""
 	for i := 0; i < int(DefaultShardIDLength) && i < len(name)/2; i++ {
@@ -232,8 +234,10 @@ func (f *casFileEntryFactory) ListNames(state FileState) ([]string, error) {
 type localFileEntry struct {
 	sync.RWMutex
 
+	// 所属文件夹
 	state            FileState
 	name             string
+	// 文件相对路径，相对于 state
 	relativeDataPath string        // Relative path to data file.
 	metadata         stringset.Set // Metadata is identified by suffix.
 }
