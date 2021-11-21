@@ -34,9 +34,11 @@ func (c Config) applyDefaults() Config {
 		// TODO: don't hard code backend client name
 		if k == "s3" {
 			if c.Bandwidth.IngressBitsPerSec == 0 {
+				// 入 80G
 				c.Bandwidth.IngressBitsPerSec = 10 * 8 * memsize.Gbit
 			}
 			if c.Bandwidth.EgressBitsPerSec == 0 {
+				// 出 8G
 				c.Bandwidth.EgressBitsPerSec = 8 * memsize.Gbit
 			}
 		}

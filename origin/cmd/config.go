@@ -47,6 +47,7 @@ type Config struct {
 	HealthCheck   healthcheck.FilterConfig `yaml:"healthcheck"`
 	BlobServer    blobserver.Config        `yaml:"blobserver"`
 	CAStore       store.CAStoreConfig      `yaml:"castore"`
+	// scheduler 配置
 	Scheduler     scheduler.Config         `yaml:"scheduler"`
 	NetworkEvent  networkevent.Config      `yaml:"network_event"`
 	PeerIDFactory core.PeerIDFactory       `yaml:"peer_id_factory"`
@@ -60,6 +61,7 @@ type Config struct {
 	BlobRefresh   blobrefresh.Config       `yaml:"blobrefresh"`
 	LocalDB       localdb.Config           `yaml:"localdb"`
 	WriteBack     persistedretry.Config    `yaml:"writeback"`
+	// nginx 配置
 	Nginx         nginx.Config             `yaml:"nginx"`
 	TLS           httputil.TLSConfig       `yaml:"tls"`
 }

@@ -23,6 +23,7 @@ import (
 
 // cacheStore provides basic cache file operations. Intended to be embedded in
 // higher level structs.
+// 实现了 writeback.FileStore
 type cacheStore struct {
 	// 主目录
 	state   base.FileState

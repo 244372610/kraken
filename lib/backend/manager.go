@@ -50,6 +50,7 @@ type Manager struct {
 }
 
 // NewManager creates a new backend Manager.
+// 根据 backend 的配置创建 backend manager
 func NewManager(configs []Config, auth AuthConfig) (*Manager, error) {
 	var backends []*backend
 	for _, config := range configs {
@@ -67,6 +68,7 @@ func NewManager(configs []Config, auth AuthConfig) (*Manager, error) {
 		if err != nil {
 			return nil, fmt.Errorf("get backend client factory: %s", err)
 		}
+		// 创建对应的 client
 		c, err = factory.Create(backendConfig, auth[name])
 		if err != nil {
 			return nil, fmt.Errorf("create backend client: %s", err)
@@ -111,6 +113,7 @@ func (m *Manager) AdjustBandwidth(denominator int) error {
 // Register dynamically registers a namespace with a provided client. Register
 // should be primarily used for testing purposes -- normally, namespaces should
 // be statically configured and provided upon construction of the Manager.
+// 动态注册，这个方法主要被用于测试，正常namespaces需要在manager创建时静态配置
 func (m *Manager) Register(namespace string, c Client) error {
 	for _, b := range m.backends {
 		if b.regexp.String() == namespace {

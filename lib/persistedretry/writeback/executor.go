@@ -87,6 +87,7 @@ func (e *Executor) upload(t *Task) error {
 		return fmt.Errorf("get client: %s", err)
 	}
 
+	// 判断文件是否已经上传成功
 	if _, err := client.Stat(t.Namespace, t.Name); err == nil {
 		// File already uploaded, no-op.
 		// 文件已经上传成功
@@ -105,6 +106,7 @@ func (e *Executor) upload(t *Task) error {
 	}
 	defer f.Close()
 
+	// 上传到 backend
 	if err := client.Upload(t.Namespace, t.Name, f); err != nil {
 		return fmt.Errorf("upload: %s", err)
 	}

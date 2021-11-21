@@ -210,6 +210,7 @@ func Run(flags *Flags, opts ...Option) {
 		log.Fatalf("Error creating write-back manager: %s", err)
 	}
 
+	// 元数据生成器
 	metaInfoGenerator, err := metainfogen.New(config.MetaInfoGen, cas)
 	if err != nil {
 		log.Fatalf("Error creating metainfo generator: %s", err)
@@ -228,6 +229,7 @@ func Run(flags *Flags, opts ...Option) {
 		log.Fatalf("Error creating scheduler: %s", err)
 	}
 
+	// 配置集群
 	cluster, err := hostlist.New(config.Cluster)
 	if err != nil {
 		log.Fatalf("Error creating cluster host list: %s", err)
@@ -238,6 +240,7 @@ func Run(flags *Flags, opts ...Option) {
 		log.Fatalf("Error building client tls config: %s", err)
 	}
 
+	// 健康检查
 	healthCheckFilter := healthcheck.NewFilter(config.HealthCheck, healthcheck.Default(tls))
 
 	hashRing := hashring.New(
@@ -245,9 +248,12 @@ func Run(flags *Flags, opts ...Option) {
 		cluster,
 		healthCheckFilter,
 		hashring.WithWatcher(backend.NewBandwidthWatcher(backendManager)))
+	// 传递 channel 的值为nil， nil channel会阻塞对该channel的所有读、写。所以，可以将某个channel设置为nil，进行强制阻塞，对于select分支来说，就是强制禁用此分支。
+	// 主动的探测集群内节点的健康情况
 	go hashRing.Monitor(nil)
 
 	addr := fmt.Sprintf("%s:%d", hostname, flags.BlobServerPort)
+	// 判断当前节点是否在 ring 中
 	if !hashRing.Contains(addr) {
 		// When DNS is used for hash ring membership, the members will be IP
 		// addresses instead of hostnames.

@@ -39,6 +39,7 @@ func New(config Config, cas *store.CAStore) (*Generator, error) {
 }
 
 // Generate generates metainfo for the blob of d and writes it to disk.
+// 生成 metainfo 并写到磁盘
 func (g *Generator) Generate(d core.Digest) error {
 	// 根据 digest 获取文件
 	info, err := g.cas.GetCacheFileStat(d.Hex())

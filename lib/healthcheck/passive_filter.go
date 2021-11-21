@@ -26,6 +26,7 @@ import (
 // individual hosts, and PassiveFilter updates which hosts are unhealthy. It is
 // recommended that clients only mark failures for network errors, not HTTP
 // errors.
+// PassiveFilter 通过Failed方法来完成失败的计数，不需要有 healthcheck.Checker 来主动发起检查
 type PassiveFilter interface {
 	Filter
 	Failed(addr string)
