@@ -142,14 +142,17 @@ func Run(flags *Flags, opts ...Option) {
 		log.Fatalf("Error building client tls config: %s", err)
 	}
 
+	// 创建 Origin
 	origins, err := config.Origin.Build(upstream.WithHealthCheck(healthcheck.Default(tls)))
 	if err != nil {
 		log.Fatalf("Error building origin host list: %s", err)
 	}
 
 	r := blobclient.NewClientResolver(blobclient.NewProvider(blobclient.WithTLS(tls)), origins)
+	// origin 集群
 	originCluster := blobclient.NewClusterClient(r)
 
+	// 创建 BuildIndexes
 	buildIndexes, err := config.BuildIndex.Build(upstream.WithHealthCheck(healthcheck.Default(tls)))
 	if err != nil {
 		log.Fatalf("Error building build-index host list: %s", err)
@@ -161,6 +164,7 @@ func Run(flags *Flags, opts ...Option) {
 	transferer := transfer.NewReadWriteTransferer(stats, tagClient, originCluster, cas)
 
 	// Open preheat function only if server-port was defined.
+	// 只有在 server-port 指定的时候开启 preheat 功能
 	if flags.ServerPort != 0 {
 		server := proxyserver.New(stats, originCluster)
 		addr := fmt.Sprintf(":%d", flags.ServerPort)
@@ -170,6 +174,7 @@ func Run(flags *Flags, opts ...Option) {
 		}()
 	}
 
+	// docker registry
 	registry, err := config.Registry.Build(config.Registry.ReadWriteParameters(transferer, cas, stats))
 	if err != nil {
 		log.Fatalf("Error creating registry: %s", err)
@@ -179,6 +184,7 @@ func Run(flags *Flags, opts ...Option) {
 		log.Fatal(registry.ListenAndServe())
 	}()
 
+	// 重写 registry
 	ros := registryoverride.NewServer(config.RegistryOverride, tagClient)
 	go func() {
 		log.Fatal(ros.ListenAndServe())

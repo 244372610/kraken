@@ -14,6 +14,7 @@
 package cmd
 
 import (
+	// 注册了 krakenStorageDriverFactory
 	"github.com/uber/kraken/lib/dockerregistry"
 	"github.com/uber/kraken/lib/store"
 	"github.com/uber/kraken/lib/upstream"

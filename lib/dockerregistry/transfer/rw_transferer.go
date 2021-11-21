@@ -29,10 +29,12 @@ import (
 
 // ReadWriteTransferer is a Transferer for proxy. Uploads/downloads blobs via the
 // local origin cluster, and posts/gets tags via the local build-index.
+// 上传/下载 blobs 通过本地的origin集群完成， posts/gets tags 通过本地的 build-index
 type ReadWriteTransferer struct {
 	stats         tally.Scope
 	tags          tagclient.Client
 	originCluster blobclient.ClusterClient
+	// local cache
 	cas           *store.CAStore
 }
 
