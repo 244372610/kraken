@@ -100,7 +100,7 @@ func (c PassiveConfig) Build() (healthcheck.List, error) {
 	return healthcheck.NewPassive(hosts, f), nil
 }
 
-// PassiveRingConfig composes host configuration for an upstream service with
+// PassiveHashRingConfig composes host configuration for an upstream service with
 // a passively health checked hash ring.
 type PassiveHashRingConfig struct {
 	Hosts       hostlist.Config                 `yaml:"hosts"`

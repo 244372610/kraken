@@ -55,6 +55,7 @@ func (c *MonitorConfig) applyDefaults() {
 }
 
 // PassiveFilterConfig defines configuration for PassiveFilter.
+// 被动健康检查过滤器的配置
 type PassiveFilterConfig struct {
 	// Fails is the number of failed requests that must occur during the FailTimeout
 	// period for a host to be marked as unhealthy.
