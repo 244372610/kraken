@@ -31,6 +31,9 @@ import (
 
 // CAStore allows uploading / caching content-addressable files.
 // 允许上传/缓存 content-addressable 文件
+// CAS https://www.codetd.com/en/article/13197125
+// Kraken 的用例不仅限于 docker image。 它提供了一组单独的端点，用于上传和下载由内容的 SHA256 哈希标识的通用内容可寻址 blob。
+// Kraken proxy 和 build-index 不适用 CAS。 CAS 上传操作将由 Kraken origin 处理，下载仍然通过 Kraken agent。
 type CAStore struct {
 	config CAStoreConfig
 
