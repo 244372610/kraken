@@ -32,6 +32,7 @@ import (
 type Config struct {
 	// DNS record from which to resolve host names. Must include port suffix,
 	// which will be attached to each host within the record.
+	// example： origin.example.com:15002
 	DNS string `yaml:"dns"`
 
 	// Statically configured addresses. Must be in 'host:port' format.

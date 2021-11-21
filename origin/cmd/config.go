@@ -39,17 +39,23 @@ import (
 type Config struct {
 	Verbose       bool
 	ZapLogging    zap.Config               `yaml:"zap"`
+	// 集群地址配置，可配置静态地址列表和DNS
 	Cluster       hostlist.Config          `yaml:"cluster"`
+	// hash ring 配置，指定一个blob的最大副本数量， 和地址列表/健康情况刷新间隔
 	HashRing      hashring.Config          `yaml:"hashring"`
+	// 集群节点健康检查方法， 因为 origin的集群一般比较小，所以集群节点间会互相检查 （Active Health Check）
 	HealthCheck   healthcheck.FilterConfig `yaml:"healthcheck"`
 	BlobServer    blobserver.Config        `yaml:"blobserver"`
 	CAStore       store.CAStoreConfig      `yaml:"castore"`
 	Scheduler     scheduler.Config         `yaml:"scheduler"`
 	NetworkEvent  networkevent.Config      `yaml:"network_event"`
 	PeerIDFactory core.PeerIDFactory       `yaml:"peer_id_factory"`
+	// 监控项配置
 	Metrics       metrics.Config           `yaml:"metrics"`
 	MetaInfoGen   metainfogen.Config       `yaml:"metainfogen"`
+	// 后端存储配置
 	Backends      []backend.Config         `yaml:"backends"`
+	// 后端存储用户认证
 	Auth          backend.AuthConfig       `yaml:"auth"`
 	BlobRefresh   blobrefresh.Config       `yaml:"blobrefresh"`
 	LocalDB       localdb.Config           `yaml:"localdb"`
