@@ -50,6 +50,7 @@ func (ph *PreheatHandler) Handle(w http.ResponseWriter, r *http.Request) error {
 		return handler.Errorf("decode body: %s", err)
 	}
 
+	// pick out the push manifest events
 	events := filterEvents(&notification)
 	for _, event := range events {
 		repo := event.Target.Repository

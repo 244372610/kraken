@@ -462,6 +462,7 @@ func (s *Server) applyToReplicas(d core.Digest, f func(i int, c blobclient.Clien
 // download of the blob from the storage backend configured for namespace will
 // be initiated. This download is asynchronous and downloadBlob will immediately
 // return a "202 Accepted" handler error.
+// 如果对应的 blob 不存在，会从配置的后段存储开始下载，下载流程是异步的
 func (s *Server) downloadBlob(namespace string, d core.Digest, dst io.Writer) error {
 	f, err := s.cas.GetCacheFileReader(d.Hex())
 	if os.IsNotExist(err) {
